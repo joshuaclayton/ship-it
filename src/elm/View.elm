@@ -8,5 +8,8 @@ import Model exposing (Model)
 
 
 view : Model -> Html a
-view =
-    always <| text "Hello world"
+view model =
+    div []
+        [ text "Hello world"
+        , text <| toString <| model.toastMessages
+        ]

@@ -6,6 +6,7 @@ module Update
         )
 
 import Model exposing (Model, Msg(..))
+import Data.Expirable as Expirable
 
 
 init : ( Model, Cmd Msg )
@@ -14,8 +15,8 @@ init =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions =
-    always Sub.none
+subscriptions model =
+    Expirable.expirableSubscription (always DecrementToastMessages)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -23,3 +24,6 @@ update msg model =
     case msg of
         NoOp ->
             model ! []
+
+        DecrementToastMessages ->
+            { model | toastMessages = Expirable.tickAll model.toastMessages } ! []
