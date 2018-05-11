@@ -1,10 +1,10 @@
 module Data.Expirable
     exposing
         ( Expirable
-        , expiresIn
-        , expirableSubscription
-        , tickAll
         , SecondsRemaining(SecondsRemaining)
+        , expirableSubscription
+        , expiresIn
+        , tickAll
         )
 
 import Time
@@ -49,10 +49,10 @@ tick (Expirable a seconds) =
         newSecondsRemaining =
             decrementSecondsRemaining seconds
     in
-        if anySecondsRemaining newSecondsRemaining then
-            Just <| Expirable a newSecondsRemaining
-        else
-            Nothing
+    if anySecondsRemaining newSecondsRemaining then
+        Just <| Expirable a newSecondsRemaining
+    else
+        Nothing
 
 
 catMaybes : List (Maybe a) -> List a
