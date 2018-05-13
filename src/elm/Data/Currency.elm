@@ -2,6 +2,7 @@ module Data.Currency
     exposing
         ( Currency(..)
         , add
+        , gte
         , map
         , multiply
         , subtract
@@ -17,6 +18,11 @@ type Currency
 map : (Float -> Float) -> Currency -> Currency
 map f (Currency c) =
     Currency <| f c
+
+
+gte : Currency -> Currency -> Bool
+gte (Currency c1) (Currency c2) =
+    c1 >= c2
 
 
 map2 : (Float -> Float -> Float) -> Currency -> Currency -> Currency

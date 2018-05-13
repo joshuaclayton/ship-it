@@ -6,6 +6,7 @@ module Data.Resource
         , build
         , currentPrice
         , purchase
+        , replace
         , totalIncomeRate
         , transactionCost
         )
@@ -141,3 +142,11 @@ increasePurchased (Count count) resource =
 totalIncomeRate : List Resource -> IncomeRate
 totalIncomeRate =
     IncomeRate.sum << List.map incomeRatePerSecond
+
+
+replace : Resource -> Resource -> Resource -> Resource
+replace oldResource newResource r =
+    if r == oldResource then
+        newResource
+    else
+        r

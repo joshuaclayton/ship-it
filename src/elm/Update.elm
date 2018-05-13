@@ -50,25 +50,4 @@ update msg model =
                 ! []
 
         PurchaseResource resource ->
-            let
-                transaction =
-                    Resource.purchase 1 resource
-
-                newResource =
-                    Resource.applyTransaction transaction
-
-                newResources =
-                    List.map
-                        (\r ->
-                            if r == resource then
-                                newResource
-                            else
-                                r
-                        )
-                        model.resources
-            in
-            { model
-                | resources = newResources
-                , availableFunds = Currency.subtract (Resource.transactionCost transaction) model.availableFunds
-            }
-                ! []
+            Model.purchaseResource 1 resource model ! []

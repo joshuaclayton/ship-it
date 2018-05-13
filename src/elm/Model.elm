@@ -3,6 +3,7 @@ module Model
         ( Model
         , Msg(..)
         , initial
+        , purchaseResource
         )
 
 import Data.Currency as Currency exposing (Currency(..))
@@ -39,3 +40,32 @@ initial =
         , Resource.build "Bicycle" 47 1.07 (Currency 12000)
         ]
     }
+
+
+purchaseResource : Int -> Resource.Resource -> Model -> Model
+purchaseResource count resource model =
+    let
+        transaction =
+            Resource.purchase count resource
+
+        newResource =
+            Resource.applyTransaction transaction
+
+        newResources =
+            List.map (Resource.replace resource newResource) model.resources
+
+        finalCost =
+            Resource.transactionCost transaction
+    in
+    if model |> canPayFor finalCost then
+        { model
+            | resources = newResources
+            , availableFunds = Currency.subtract finalCost model.availableFunds
+        }
+    else
+        model
+
+
+canPayFor : Currency -> Model -> Bool
+canPayFor cost { availableFunds } =
+    Currency.gte availableFunds cost
