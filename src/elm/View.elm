@@ -3,7 +3,7 @@ module View
         ( view
         )
 
-import Data.Currency as Currency
+import Data.Inventory as Inventory
 import Data.Resource as Resource
 import Html exposing (..)
 import Html.Events exposing (onClick)
@@ -16,13 +16,13 @@ view model =
         [ text "Hello world"
         , button [ onClick GenerateCurrency ] [ text "Make a thing" ]
         , br [] []
-        , text <| toString <| Currency.map (toFloat << truncate) model.availableFunds
+        , text <| toString <| Inventory.availableFunds model.inventory
         , br [] []
         , text <| toString model.toastMessages
         , br [] []
-        , text <| "Rate per second: " ++ toString (Resource.totalIncomeRate model.resources)
+        , text <| "Rate per second: " ++ toString (Resource.totalIncomeRate <| Inventory.resources model.inventory)
         , br [] []
-        , resourcesList model.resources
+        , resourcesList <| Inventory.resources model.inventory
         ]
 
 

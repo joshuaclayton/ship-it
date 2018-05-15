@@ -5,10 +5,8 @@ module Update
         , update
         )
 
-import Data.Currency as Currency
 import Data.Expirable as Expirable
-import Data.IncomeRate as IncomeRate
-import Data.Resource as Resource
+import Data.Inventory as Inventory
 import Model exposing (Model, Msg(..))
 import Time
 
@@ -37,17 +35,17 @@ update msg model =
         NoOp ->
             model ! []
 
-        GenerateCurrency ->
-            { model | availableFunds = Currency.add (Currency.Currency 1) model.availableFunds } ! []
-
         DecrementToastMessages ->
             { model | toastMessages = Expirable.tickAll model.toastMessages } ! []
 
+        GenerateCurrency ->
+            { model | inventory = Inventory.generateCurrency model.inventory } ! []
+
         AccrueValue ->
             { model
-                | availableFunds = IncomeRate.addToCurrency (IncomeRate.multiply (Resource.totalIncomeRate model.resources) (updateFrequencyInMs / 1000)) model.availableFunds
+                | inventory = Inventory.accrueValue (updateFrequencyInMs / 1000) model.inventory
             }
                 ! []
 
         PurchaseResource resource ->
-            Model.purchaseResource 1 resource model ! []
+            { model | inventory = Inventory.purchaseResource 1 resource model.inventory } ! []

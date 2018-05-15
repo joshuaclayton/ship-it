@@ -1,9 +1,9 @@
-module ModelTest exposing (..)
+module InventoryTest exposing (..)
 
 import Data.Currency as Currency
+import Data.Inventory as Inventory exposing (Inventory)
 import Data.Resource as Resource
 import Expect
-import Model exposing (Model)
 import Test exposing (..)
 
 
@@ -17,22 +17,16 @@ doubleCostResource =
     Resource.build "Double cost resource" 1 2 (Currency.Currency 5)
 
 
-initialModel : Model
+initialModel : Inventory
 initialModel =
-    let
-        initial =
-            Model.initial
-    in
-    { initial | resources = [ constantCostResource, doubleCostResource ] }
+    Inventory.initial
+        |> Inventory.replaceResources [ constantCostResource, doubleCostResource ]
 
 
-initialModelWithAvailableFunds : Currency.Currency -> Model
+initialModelWithAvailableFunds : Currency.Currency -> Inventory
 initialModelWithAvailableFunds funds =
-    let
-        model =
-            initialModel
-    in
-    { model | availableFunds = funds }
+    initialModel
+        |> Inventory.setAvailableFunds funds
 
 
 suite : Test
@@ -42,22 +36,22 @@ suite =
             [ test "disallows purchasing without enough funds" <|
                 \_ ->
                     Expect.equal
-                        (Model.purchaseResource 1 constantCostResource initialModel)
+                        (Inventory.purchaseResource 1 constantCostResource initialModel)
                         initialModel
             , test "allows purchasing with enough funds" <|
                 \_ ->
                     Expect.equal
-                        (Model.purchaseResource 1 constantCostResource (initialModelWithAvailableFunds <| Currency.Currency 5)).availableFunds
+                        (Inventory.availableFunds <| Inventory.purchaseResource 1 constantCostResource (initialModelWithAvailableFunds <| Currency.Currency 5))
                         Currency.zero
             , test "allows purchasing multiple with enough funds" <|
                 \_ ->
                     Expect.equal
-                        (Model.purchaseResource 4 constantCostResource (initialModelWithAvailableFunds <| Currency.Currency 250)).availableFunds
+                        (Inventory.availableFunds <| Inventory.purchaseResource 4 constantCostResource (initialModelWithAvailableFunds <| Currency.Currency 250))
                         (Currency.Currency 230)
             , test "maintains updated costs if the resource has a multiplier" <|
                 \_ ->
                     Expect.equal
-                        (Model.purchaseResource 4 doubleCostResource (initialModelWithAvailableFunds <| Currency.Currency 250)).availableFunds
+                        (Inventory.availableFunds <| Inventory.purchaseResource 4 doubleCostResource (initialModelWithAvailableFunds <| Currency.Currency 250))
                         (Currency.Currency 175)
             ]
         ]

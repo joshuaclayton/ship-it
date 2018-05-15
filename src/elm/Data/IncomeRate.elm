@@ -2,10 +2,10 @@ module Data.IncomeRate
     exposing
         ( IncomeRate(..)
         , add
-        , addToCurrency
         , build
         , multiply
         , sum
+        , toCurrency
         , zero
         )
 
@@ -26,14 +26,14 @@ zero =
     IncomeRate Currency.zero
 
 
+toCurrency : IncomeRate -> Currency
+toCurrency (IncomeRate rate) =
+    rate
+
+
 add : IncomeRate -> IncomeRate -> IncomeRate
 add (IncomeRate i1) (IncomeRate i2) =
     IncomeRate <| Currency.add i1 i2
-
-
-addToCurrency : IncomeRate -> Currency -> Currency
-addToCurrency (IncomeRate rate) price =
-    Currency.add rate price
 
 
 multiply : IncomeRate -> Float -> IncomeRate
