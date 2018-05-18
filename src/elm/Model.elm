@@ -19,7 +19,7 @@ type alias Model =
 type Msg
     = NoOp
     | DecrementToastMessages
-    | PurchaseResource Resource.Resource
+    | PurchaseResource Resource.Level
     | AccrueValue
     | GenerateCurrency
 

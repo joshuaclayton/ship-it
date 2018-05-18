@@ -22,17 +22,17 @@ view model =
         , br [] []
         , text <| "Rate per second: " ++ toString (Resource.totalIncomeRate <| Inventory.resources model.inventory)
         , br [] []
-        , resourcesList <| Inventory.resources model.inventory
+        , resourcesList <| Inventory.resourcesWithLevels model.inventory
         ]
 
 
-resourcesList : List Resource.Resource -> Html Msg
+resourcesList : List ( Resource.Level, Resource.Resource ) -> Html Msg
 resourcesList resources =
     ul []
         (List.map
-            (\resource ->
+            (\( level, resource ) ->
                 li []
-                    [ button [ onClick <| PurchaseResource resource ] [ text <| "Buy " ++ toString resource.name ++ " for " ++ toString (Resource.currentPrice resource) ]
+                    [ button [ onClick <| PurchaseResource level ] [ text <| "Buy " ++ toString resource.name ++ " for " ++ toString (Resource.currentPrice resource) ]
                     ]
             )
             resources

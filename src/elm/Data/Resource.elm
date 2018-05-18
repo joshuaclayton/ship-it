@@ -1,6 +1,7 @@
 module Data.Resource
     exposing
-        ( Resource
+        ( Level(..)
+        , Resource
         , Transaction
         , applyTransaction
         , build
@@ -8,6 +9,7 @@ module Data.Resource
         , purchase
         , replace
         , totalIncomeRate
+        , totalPurchasedCount
         , transactionCost
         )
 
@@ -19,9 +21,16 @@ type alias Resource =
     { name : Name
     , multiplier : Multiplier
     , incomeRate : IncomeRate
-    , currentPrice : Current Currency
+    , basePrice : Currency
     , totalPurchased : Total Purchased
     }
+
+
+type Level
+    = L1
+    | L2
+    | L3
+    | L4
 
 
 type Transaction
@@ -30,10 +39,6 @@ type Transaction
 
 type Name
     = Name String
-
-
-type Current a
-    = Current a
 
 
 type Total a
@@ -57,18 +62,26 @@ build name incomeRate multiplier startingPrice =
     { name = Name name
     , incomeRate = IncomeRate.build incomeRate
     , multiplier = Multiplier multiplier
-    , currentPrice = Current startingPrice
+    , basePrice = startingPrice
     , totalPurchased = Total <| Purchased <| Count 0
     }
 
 
 currentPrice : Resource -> Currency
-currentPrice { currentPrice } =
+currentPrice resource =
+    currentPriceByPurchasedCount resource (totalPurchasedCount resource)
+
+
+currentPriceByPurchasedCount : Resource -> Int -> Currency
+currentPriceByPurchasedCount { basePrice, multiplier } exp =
     let
-        (Current price) =
-            currentPrice
+        (Currency price) =
+            basePrice
+
+        (Multiplier multiplier_) =
+            multiplier
     in
-    price
+    Currency <| price * multiplier_ ^ toFloat exp
 
 
 totalPurchasedCount : Resource -> Int
@@ -83,14 +96,25 @@ totalPurchasedCount { totalPurchased } =
 purchase : Int -> Resource -> Transaction
 purchase count resource =
     let
-        ( totalPrice, newCurrentPrice ) =
-            calculate resource.multiplier (Count count) resource.currentPrice
+        startingCount =
+            totalPurchasedCount resource
+
+        priceExponents =
+            List.reverse <| List.range startingCount (startingCount + count - 1)
+
+        totalPrice =
+            List.map (currentPriceByPurchasedCount resource) priceExponents
+                |> Currency.sum
+                |> Total
 
         newResource =
-            { resource | currentPrice = newCurrentPrice }
+            resource
                 |> increasePurchased (Count count)
     in
-    Transaction newResource totalPrice (Purchased (Count count))
+    if count > 0 then
+        Transaction newResource totalPrice (Purchased (Count count))
+    else
+        Transaction resource (Total Currency.zero) (Purchased (Count 0))
 
 
 transactionCost : Transaction -> Currency
@@ -101,25 +125,6 @@ transactionCost (Transaction _ (Total price) _) =
 applyTransaction : Transaction -> Resource
 applyTransaction (Transaction resource _ _) =
     resource
-
-
-calculate : Multiplier -> Count -> Current Currency -> ( Total Currency, Current Currency )
-calculate multiplier (Count count) price =
-    let
-        calculatePrice (Current (Currency p)) (Multiplier m) exp =
-            Currency <| p * m ^ toFloat exp
-
-        priceExponents =
-            List.reverse <| List.range 0 (count - 1)
-    in
-    case List.map (calculatePrice price multiplier) priceExponents of
-        [] ->
-            ( Total <| Currency.zero, price )
-
-        (newCurrentPrice :: rest) as xs ->
-            ( Total <| Currency.sum xs
-            , Current <| multiplyCurrency newCurrentPrice multiplier
-            )
 
 
 incomeRatePerSecond : Resource -> IncomeRate

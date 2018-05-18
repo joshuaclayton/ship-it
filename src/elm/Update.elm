@@ -47,5 +47,5 @@ update msg model =
             }
                 ! []
 
-        PurchaseResource resource ->
-            { model | inventory = Inventory.purchaseResource 1 resource model.inventory } ! []
+        PurchaseResource level ->
+            { model | inventory = Inventory.purchaseResource 1 level model.inventory } ! []

@@ -19,8 +19,10 @@ doubleCostResource =
 
 initialModel : Inventory
 initialModel =
-    Inventory.initial
-        |> Inventory.replaceResources [ constantCostResource, doubleCostResource ]
+    Inventory.initialWithResources
+        [ ( Resource.L1, constantCostResource )
+        , ( Resource.L2, doubleCostResource )
+        ]
 
 
 initialModelWithAvailableFunds : Currency.Currency -> Inventory
@@ -36,22 +38,31 @@ suite =
             [ test "disallows purchasing without enough funds" <|
                 \_ ->
                     Expect.equal
-                        (Inventory.purchaseResource 1 constantCostResource initialModel)
+                        (Inventory.purchaseResource 1 Resource.L1 initialModel)
                         initialModel
             , test "allows purchasing with enough funds" <|
                 \_ ->
                     Expect.equal
-                        (Inventory.availableFunds <| Inventory.purchaseResource 1 constantCostResource (initialModelWithAvailableFunds <| Currency.Currency 5))
+                        (Inventory.availableFunds <| Inventory.purchaseResource 1 Resource.L1 (initialModelWithAvailableFunds <| Currency.Currency 5))
                         Currency.zero
             , test "allows purchasing multiple with enough funds" <|
                 \_ ->
                     Expect.equal
-                        (Inventory.availableFunds <| Inventory.purchaseResource 4 constantCostResource (initialModelWithAvailableFunds <| Currency.Currency 250))
+                        (Inventory.availableFunds <| Inventory.purchaseResource 4 Resource.L1 (initialModelWithAvailableFunds <| Currency.Currency 250))
                         (Currency.Currency 230)
             , test "maintains updated costs if the resource has a multiplier" <|
                 \_ ->
                     Expect.equal
-                        (Inventory.availableFunds <| Inventory.purchaseResource 4 doubleCostResource (initialModelWithAvailableFunds <| Currency.Currency 250))
+                        (Inventory.availableFunds <| Inventory.purchaseResource 4 Resource.L2 (initialModelWithAvailableFunds <| Currency.Currency 250))
+                        (Currency.Currency 175)
+            , test "supports chaining multiple purchases" <|
+                \_ ->
+                    Expect.equal
+                        ((initialModelWithAvailableFunds <| Currency.Currency 250)
+                            |> Inventory.purchaseResource 2 Resource.L2
+                            |> Inventory.purchaseResource 2 Resource.L2
+                            |> Inventory.availableFunds
+                        )
                         (Currency.Currency 175)
             ]
         ]
