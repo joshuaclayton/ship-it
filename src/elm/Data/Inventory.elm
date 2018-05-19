@@ -28,45 +28,57 @@ type alias Resources =
 
 
 type Inventory
-    = Inventory Wallet Multipliers.Model Resources
+    = Inventory
+        { wallet : Wallet
+        , multipliers : Multipliers.Model
+        , resources : Resources
+        }
 
 
 clickAmount : Inventory -> Currency.Currency
-clickAmount (Inventory _ multipliers _) =
+clickAmount (Inventory { multipliers }) =
     Multipliers.clickAmount multipliers
 
 
 clickMultiplierCost : Inventory -> Currency.Currency
-clickMultiplierCost (Inventory _ multipliers _) =
+clickMultiplierCost (Inventory { multipliers }) =
     Multipliers.clickMultiplierCost multipliers
 
 
 setAvailableFunds : Currency.Currency -> Inventory -> Inventory
-setAvailableFunds newFunds (Inventory _ multipliers resources) =
-    Inventory (Wallet.fromCurrency newFunds) multipliers resources
+setAvailableFunds newFunds (Inventory inventory) =
+    Inventory { inventory | wallet = Wallet.fromCurrency newFunds }
 
 
 initial : Inventory
 initial =
-    Inventory Wallet.initial Multipliers.initial initialResources
+    Inventory
+        { wallet = Wallet.initial
+        , multipliers = Multipliers.initial
+        , resources = initialResources
+        }
 
 
 initialWithResources : List ( Resource.Level, Resource.Resource ) -> Inventory
-initialWithResources =
-    Inventory Wallet.initial Multipliers.initial << AllDict.fromList toString
+initialWithResources resources =
+    Inventory
+        { wallet = Wallet.initial
+        , multipliers = Multipliers.initial
+        , resources = AllDict.fromList toString resources
+        }
 
 
 generateCurrency : Inventory -> Inventory
-generateCurrency ((Inventory wallet multipliers resources) as inventory) =
+generateCurrency ((Inventory ({ wallet } as inventory)) as inv) =
     let
         newWallet =
-            Wallet.add (clickAmount inventory) wallet
+            Wallet.add (clickAmount inv) wallet
     in
-    Inventory newWallet multipliers resources
+    Inventory { inventory | wallet = newWallet }
 
 
 accrueValue : Float -> Inventory -> Inventory
-accrueValue frequency (Inventory wallet multipliers resources) =
+accrueValue frequency (Inventory ({ resources, wallet } as inventory)) =
     let
         totalIncomeRate =
             Resource.totalIncomeRate <| AllDict.values resources
@@ -77,41 +89,45 @@ accrueValue frequency (Inventory wallet multipliers resources) =
         newWallet =
             Wallet.add accruedValueTotal wallet
     in
-    Inventory newWallet multipliers resources
+    Inventory { inventory | wallet = newWallet }
 
 
 availableFunds : Inventory -> Currency.Currency
-availableFunds (Inventory wallet _ _) =
+availableFunds (Inventory { wallet }) =
     Wallet.toCurrency wallet
 
 
 resources : Inventory -> List Resource.Resource
-resources (Inventory _ _ resources) =
+resources (Inventory { resources }) =
     AllDict.values resources
 
 
 resourcesWithLevels : Inventory -> List ( Resource.Level, Resource.Resource )
-resourcesWithLevels (Inventory _ _ resources) =
+resourcesWithLevels (Inventory { resources }) =
     AllDict.toList resources
 
 
 purchaseClickMultiplier : Inventory -> Inventory
-purchaseClickMultiplier ((Inventory wallet multipliers resources) as inventory) =
+purchaseClickMultiplier ((Inventory ({ wallet, multipliers } as inventory)) as inv) =
     let
         finalCost =
-            clickMultiplierCost inventory
+            clickMultiplierCost inv
     in
     if wallet |> canPayFor finalCost then
-        Inventory (Wallet.subtract finalCost wallet) (Multipliers.incrementClickMultiplier multipliers) resources
+        Inventory
+            { inventory
+                | wallet = Wallet.subtract finalCost wallet
+                , multipliers = Multipliers.incrementClickMultiplier multipliers
+            }
     else
-        Inventory wallet multipliers resources
+        inv
 
 
 purchaseResource : Int -> Resource.Level -> Inventory -> Inventory
-purchaseResource count level (Inventory wallet multipliers resources) =
+purchaseResource count level (Inventory ({ resources, wallet } as inventory)) =
     case AllDict.get level resources of
         Nothing ->
-            Inventory wallet multipliers resources
+            Inventory inventory
 
         Just resource ->
             let
@@ -128,9 +144,13 @@ purchaseResource count level (Inventory wallet multipliers resources) =
                     Resource.transactionCost transaction
             in
             if wallet |> canPayFor finalCost then
-                Inventory (Wallet.subtract finalCost wallet) multipliers newResources
+                Inventory
+                    { inventory
+                        | wallet = Wallet.subtract finalCost wallet
+                        , resources = newResources
+                    }
             else
-                Inventory wallet multipliers resources
+                Inventory inventory
 
 
 canPayFor : Currency.Currency -> Wallet -> Bool
