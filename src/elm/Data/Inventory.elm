@@ -16,10 +16,7 @@ import AllDict exposing (AllDict)
 import Data.Currency as Currency
 import Data.IncomeRate as IncomeRate
 import Data.Resource as Resource
-
-
-type Wallet
-    = Wallet Currency.Currency
+import Data.Wallet as Wallet exposing (Wallet)
 
 
 type alias Resources =
@@ -32,35 +29,30 @@ type Inventory
 
 setAvailableFunds : Currency.Currency -> Inventory -> Inventory
 setAvailableFunds newFunds (Inventory _ resources) =
-    Inventory (Wallet newFunds) resources
-
-
-emptyWallet : Wallet
-emptyWallet =
-    Wallet Currency.zero
+    Inventory (Wallet.fromCurrency newFunds) resources
 
 
 initial : Inventory
 initial =
-    Inventory emptyWallet initialResources
+    Inventory Wallet.initial initialResources
 
 
 initialWithResources : List ( Resource.Level, Resource.Resource ) -> Inventory
 initialWithResources =
-    Inventory emptyWallet << AllDict.fromList toString
+    Inventory Wallet.initial << AllDict.fromList toString
 
 
 generateCurrency : Inventory -> Inventory
-generateCurrency (Inventory (Wallet funds) resources) =
+generateCurrency (Inventory wallet resources) =
     let
         newWallet =
-            Wallet <| Currency.add (Currency.Currency 1) funds
+            Wallet.add (Currency.Currency 1) wallet
     in
     Inventory newWallet resources
 
 
 accrueValue : Float -> Inventory -> Inventory
-accrueValue frequency (Inventory (Wallet funds) resources) =
+accrueValue frequency (Inventory wallet resources) =
     let
         totalIncomeRate =
             Resource.totalIncomeRate <| AllDict.values resources
@@ -69,14 +61,14 @@ accrueValue frequency (Inventory (Wallet funds) resources) =
             IncomeRate.toCurrency <| IncomeRate.multiply totalIncomeRate frequency
 
         newWallet =
-            Wallet <| Currency.add accruedValueTotal funds
+            Wallet.add accruedValueTotal wallet
     in
     Inventory newWallet resources
 
 
 availableFunds : Inventory -> Currency.Currency
-availableFunds (Inventory (Wallet funds) _) =
-    funds
+availableFunds (Inventory wallet _) =
+    Wallet.toCurrency wallet
 
 
 resources : Inventory -> List Resource.Resource
@@ -110,19 +102,14 @@ purchaseResource count level (Inventory wallet resources) =
                     Resource.transactionCost transaction
             in
             if wallet |> canPayFor finalCost then
-                Inventory (deductFromWallet finalCost wallet) newResources
+                Inventory (Wallet.subtract finalCost wallet) newResources
             else
                 Inventory wallet resources
 
 
 canPayFor : Currency.Currency -> Wallet -> Bool
 canPayFor cost wallet =
-    Currency.gte (walletValue wallet) cost
-
-
-walletValue : Wallet -> Currency.Currency
-walletValue (Wallet value) =
-    value
+    Currency.gte (Wallet.toCurrency wallet) cost
 
 
 initialResources : Resources
@@ -133,8 +120,3 @@ initialResources =
         , ( Resource.L3, Resource.build "Skateboard" 8 1.07 (Currency.Currency 1100) )
         , ( Resource.L4, Resource.build "Bicycle" 47 1.07 (Currency.Currency 12000) )
         ]
-
-
-deductFromWallet : Currency.Currency -> Wallet -> Wallet
-deductFromWallet amount (Wallet funds) =
-    Wallet <| Currency.subtract amount funds
