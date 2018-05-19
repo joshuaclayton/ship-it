@@ -62,25 +62,14 @@ totalPurchasedCount =
 purchase : Int -> Resource -> Transaction
 purchase count resource =
     let
-        startingCount =
-            totalPurchasedCount resource
-
-        priceExponents =
-            List.reverse <| List.range startingCount (startingCount + count - 1)
-
-        totalPrice =
-            List.map (Increasable.currentPriceByPurchasedCount resource) priceExponents
-                |> Currency.sum
-                |> Total
+        ( purchased, totalPrice ) =
+            Increasable.purchase resource (Count count)
 
         newResource =
             resource
-                |> Increasable.increaseTotalPurchased (Count count)
+                |> Increasable.increaseTotalPurchased purchased
     in
-    if count > 0 then
-        Transaction newResource totalPrice (Purchased (Count count))
-    else
-        Transaction resource (Total Currency.zero) (Purchased (Count 0))
+    Transaction newResource totalPrice (Purchased purchased)
 
 
 transactionCost : Transaction -> Currency

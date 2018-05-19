@@ -10,6 +10,7 @@ module Data.Increasable
         , increaseTotalPurchased
         , incrementTotalPurchased
         , initialTotalCount
+        , purchase
         , totalPurchasedCount
         )
 
@@ -88,3 +89,24 @@ currentPriceByPurchasedCount { basePrice, multiplier } exp =
             multiplier
     in
     Currency.Currency <| price * multiplier_ ^ toFloat exp
+
+
+purchase : Increasable a -> Count -> ( Count, Total Currency.Currency )
+purchase model (Count count) =
+    let
+        startingCount =
+            totalPurchasedCount model
+
+        priceExponents =
+            List.reverse <| List.range startingCount (startingCount + count - 1)
+    in
+    if count > 0 then
+        ( Count count
+        , List.map (currentPriceByPurchasedCount model) priceExponents
+            |> Currency.sum
+            |> Total
+        )
+    else
+        ( Count 0
+        , Total Currency.zero
+        )
