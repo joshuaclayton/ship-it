@@ -17,11 +17,12 @@ init =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Expirable.expirableSubscription (always DecrementToastMessages)
-        , Time.every (updateFrequencyInMs * Time.millisecond) (always AccrueValue)
-        ]
+subscriptions =
+    always <|
+        Sub.batch
+            [ Expirable.expirableSubscription (always DecrementToastMessages)
+            , Time.every (updateFrequencyInMs * Time.millisecond) (always AccrueValue)
+            ]
 
 
 updateFrequencyInMs : Float
