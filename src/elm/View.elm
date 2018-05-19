@@ -7,14 +7,15 @@ import Data.Inventory as Inventory
 import Data.Resource as Resource
 import Html exposing (..)
 import Html.Events exposing (onClick)
-import Model exposing (Model, Msg(GenerateCurrency, PurchaseResource))
+import Model exposing (Model, Msg(..))
 
 
 view : Model -> Html Msg
 view model =
     div []
         [ text "Hello world"
-        , button [ onClick GenerateCurrency ] [ text "Make a thing" ]
+        , button [ onClick GenerateCurrency ] [ text <| "Generate " ++ toString (Inventory.clickAmount model.inventory) ]
+        , button [ onClick PurchaseClickMultiplier ] [ text <| "Purchase a multiplier for " ++ toString (Inventory.clickMultiplierCost model.inventory) ]
         , br [] []
         , text <| toString <| Inventory.availableFunds model.inventory
         , br [] []

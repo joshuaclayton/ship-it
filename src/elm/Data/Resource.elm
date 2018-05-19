@@ -15,15 +15,14 @@ module Data.Resource
 
 import Data.Currency as Currency exposing (Currency(..))
 import Data.IncomeRate as IncomeRate exposing (IncomeRate(..))
+import Data.Increasable as Increasable exposing (Count(..), Increasable, Purchased(..), Total(..))
 
 
 type alias Resource =
-    { name : Name
-    , multiplier : Multiplier
-    , incomeRate : IncomeRate
-    , basePrice : Currency
-    , totalPurchased : Total Purchased
-    }
+    Increasable
+        { name : Name
+        , incomeRate : IncomeRate
+        }
 
 
 type Level
@@ -41,56 +40,24 @@ type Name
     = Name String
 
 
-type Total a
-    = Total a
-
-
-type Count
-    = Count Int
-
-
-type Purchased
-    = Purchased Count
-
-
-type Multiplier
-    = Multiplier Float
-
-
 build : String -> Float -> Float -> Currency -> Resource
 build name incomeRate multiplier startingPrice =
     { name = Name name
     , incomeRate = IncomeRate.build incomeRate
-    , multiplier = Multiplier multiplier
+    , multiplier = Increasable.buildMultiplier multiplier
     , basePrice = startingPrice
-    , totalPurchased = Total <| Purchased <| Count 0
+    , totalPurchased = Increasable.initialTotalCount
     }
 
 
 currentPrice : Resource -> Currency
-currentPrice resource =
-    currentPriceByPurchasedCount resource (totalPurchasedCount resource)
-
-
-currentPriceByPurchasedCount : Resource -> Int -> Currency
-currentPriceByPurchasedCount { basePrice, multiplier } exp =
-    let
-        (Currency price) =
-            basePrice
-
-        (Multiplier multiplier_) =
-            multiplier
-    in
-    Currency <| price * multiplier_ ^ toFloat exp
+currentPrice =
+    Increasable.currentPrice
 
 
 totalPurchasedCount : Resource -> Int
-totalPurchasedCount { totalPurchased } =
-    let
-        (Total (Purchased (Count count))) =
-            totalPurchased
-    in
-    count
+totalPurchasedCount =
+    Increasable.totalPurchasedCount
 
 
 purchase : Int -> Resource -> Transaction
@@ -103,13 +70,13 @@ purchase count resource =
             List.reverse <| List.range startingCount (startingCount + count - 1)
 
         totalPrice =
-            List.map (currentPriceByPurchasedCount resource) priceExponents
+            List.map (Increasable.currentPriceByPurchasedCount resource) priceExponents
                 |> Currency.sum
                 |> Total
 
         newResource =
             resource
-                |> increasePurchased (Count count)
+                |> Increasable.increaseTotalPurchased (Count count)
     in
     if count > 0 then
         Transaction newResource totalPrice (Purchased (Count count))
@@ -130,18 +97,6 @@ applyTransaction (Transaction resource _ _) =
 incomeRatePerSecond : Resource -> IncomeRate
 incomeRatePerSecond ({ incomeRate } as resource) =
     IncomeRate.multiply incomeRate (toFloat (totalPurchasedCount resource))
-
-
-multiplyCurrency : Currency -> Multiplier -> Currency
-multiplyCurrency c (Multiplier m) =
-    Currency.multiply c m
-
-
-increasePurchased : Count -> Resource -> Resource
-increasePurchased (Count count) resource =
-    { resource
-        | totalPurchased = Total <| Purchased <| Count <| totalPurchasedCount resource + count
-    }
 
 
 totalIncomeRate : List Resource -> IncomeRate
