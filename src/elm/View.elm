@@ -21,7 +21,7 @@ view model =
         , br [] []
         , text <| toString model.toastMessages
         , br [] []
-        , text <| "Rate per second: " ++ toString (Resource.totalIncomeRate <| Inventory.resources model.inventory)
+        , text <| "Rate per second: " ++ toString (Inventory.currentIncomeRate model.inventory)
         , br [] []
         , resourcesList <| Inventory.resourcesWithLevels model.inventory
         ]

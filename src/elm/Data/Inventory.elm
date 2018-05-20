@@ -5,6 +5,7 @@ module Data.Inventory
         , availableFunds
         , clickAmount
         , clickMultiplierCost
+        , currentIncomeRate
         , generateCurrency
         , initial
         , initialWithResources
@@ -77,14 +78,16 @@ generateCurrency ((Inventory ({ wallet } as inventory)) as inv) =
     Inventory { inventory | wallet = newWallet }
 
 
-accrueValue : Float -> Inventory -> Inventory
-accrueValue frequency (Inventory ({ resources, wallet } as inventory)) =
-    let
-        totalIncomeRate =
-            Resource.totalIncomeRate <| AllDict.values resources
+currentIncomeRate : Inventory -> IncomeRate.IncomeRate
+currentIncomeRate (Inventory { resources }) =
+    Resource.totalIncomeRate <| AllDict.values resources
 
+
+accrueValue : Float -> Inventory -> Inventory
+accrueValue frequency ((Inventory ({ wallet } as inventory)) as inv) =
+    let
         accruedValueTotal =
-            IncomeRate.toCurrency <| IncomeRate.multiply totalIncomeRate frequency
+            IncomeRate.toCurrency <| IncomeRate.multiply (currentIncomeRate inv) frequency
 
         newWallet =
             Wallet.add accruedValueTotal wallet
