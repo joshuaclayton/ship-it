@@ -20,6 +20,7 @@ type Msg
     = NoOp
     | DecrementToastMessages
     | PurchaseResource Resource.Level
+    | PurchaseResourceMultiplier Resource.Level
     | PurchaseClickMultiplier
     | AccrueValue
     | GenerateCurrency

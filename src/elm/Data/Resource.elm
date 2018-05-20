@@ -10,6 +10,7 @@ module Data.Resource
         , totalIncomeRate
         , totalPurchasedCount
         , transactionCost
+        , withIncomeRateMultiplier
         )
 
 import Data.Currency as Currency exposing (Currency(..))
@@ -90,3 +91,8 @@ incomeRatePerSecond ({ incomeRate } as resource) =
 totalIncomeRate : List Resource -> IncomeRate
 totalIncomeRate =
     IncomeRate.sum << List.map incomeRatePerSecond
+
+
+withIncomeRateMultiplier : Resource -> Increasable.Multiplier -> Resource
+withIncomeRateMultiplier ({ incomeRate } as resource) multiplier =
+    { resource | incomeRate = IncomeRate.multiply incomeRate (Increasable.multiplierValue multiplier) }

@@ -2,6 +2,7 @@ module Data.Increasable
     exposing
         ( Count(..)
         , Increasable
+        , Multiplier
         , Purchased(..)
         , Total(..)
         , buildMultiplier
@@ -10,6 +11,7 @@ module Data.Increasable
         , increaseTotalPurchased
         , incrementTotalPurchased
         , initialTotalCount
+        , multiplierValue
         , purchase
         , totalPurchasedCount
         )
@@ -44,6 +46,11 @@ type alias Increasable a =
 buildMultiplier : Float -> Multiplier
 buildMultiplier =
     Multiplier
+
+
+multiplierValue : Multiplier -> Float
+multiplierValue (Multiplier v) =
+    v
 
 
 initialTotalCount : Total Purchased

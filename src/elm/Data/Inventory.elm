@@ -11,6 +11,8 @@ module Data.Inventory
         , initialWithResources
         , purchaseClickMultiplier
         , purchaseResource
+        , purchaseResourceMultiplier
+        , resourceMultiplierCost
         , resources
         , resourcesWithLevels
         , setAvailableFunds
@@ -46,6 +48,11 @@ clickMultiplierCost (Inventory { multipliers }) =
     Multipliers.clickMultiplierCost multipliers
 
 
+resourceMultiplierCost : Inventory -> Resource.Level -> Currency.Currency
+resourceMultiplierCost (Inventory { multipliers }) =
+    Multipliers.resourceMultiplierCost multipliers
+
+
 setAvailableFunds : Currency.Currency -> Inventory -> Inventory
 setAvailableFunds newFunds (Inventory inventory) =
     Inventory { inventory | wallet = Wallet.fromCurrency newFunds }
@@ -79,8 +86,15 @@ generateCurrency ((Inventory ({ wallet } as inventory)) as inv) =
 
 
 currentIncomeRate : Inventory -> IncomeRate.IncomeRate
-currentIncomeRate (Inventory { resources }) =
-    Resource.totalIncomeRate <| AllDict.values resources
+currentIncomeRate (Inventory { resources, multipliers }) =
+    let
+        applyIncomeRateMultipliers level resource =
+            Multipliers.increaseMultiplierForLevel multipliers level
+                |> Resource.withIncomeRateMultiplier resource
+    in
+    AllDict.map applyIncomeRateMultipliers resources
+        |> AllDict.values
+        |> Resource.totalIncomeRate
 
 
 accrueValue : Float -> Inventory -> Inventory
@@ -121,6 +135,22 @@ purchaseClickMultiplier ((Inventory ({ wallet, multipliers } as inventory)) as i
             { inventory
                 | wallet = Wallet.subtract finalCost wallet
                 , multipliers = Multipliers.incrementClickMultiplier multipliers
+            }
+    else
+        inv
+
+
+purchaseResourceMultiplier : Inventory -> Resource.Level -> Inventory
+purchaseResourceMultiplier ((Inventory ({ wallet, multipliers } as inventory)) as inv) level =
+    let
+        finalCost =
+            resourceMultiplierCost inv level
+    in
+    if wallet |> canPayFor finalCost then
+        Inventory
+            { inventory
+                | wallet = Wallet.subtract finalCost wallet
+                , multipliers = Multipliers.incrementResourceMultiplier multipliers level
             }
     else
         inv

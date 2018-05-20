@@ -17,6 +17,11 @@ view model =
         , button [ onClick GenerateCurrency ] [ text <| "Generate " ++ toString (Inventory.clickAmount model.inventory) ]
         , button [ onClick PurchaseClickMultiplier ] [ text <| "Purchase a multiplier for " ++ toString (Inventory.clickMultiplierCost model.inventory) ]
         , br [] []
+        , button [ onClick <| PurchaseResourceMultiplier Resource.L1 ] [ text <| "Purchase a L1 multiplier for " ++ toString (Inventory.resourceMultiplierCost model.inventory Resource.L1) ]
+        , button [ onClick <| PurchaseResourceMultiplier Resource.L2 ] [ text <| "Purchase a L2 multiplier for " ++ toString (Inventory.resourceMultiplierCost model.inventory Resource.L2) ]
+        , button [ onClick <| PurchaseResourceMultiplier Resource.L3 ] [ text <| "Purchase a L3 multiplier for " ++ toString (Inventory.resourceMultiplierCost model.inventory Resource.L3) ]
+        , button [ onClick <| PurchaseResourceMultiplier Resource.L4 ] [ text <| "Purchase a L4 multiplier for " ++ toString (Inventory.resourceMultiplierCost model.inventory Resource.L4) ]
+        , br [] []
         , text <| toString <| Inventory.availableFunds model.inventory
         , br [] []
         , text <| toString model.toastMessages

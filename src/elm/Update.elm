@@ -51,5 +51,8 @@ update msg model =
         PurchaseResource level ->
             { model | inventory = Inventory.purchaseResource 1 level model.inventory } ! []
 
+        PurchaseResourceMultiplier level ->
+            { model | inventory = Inventory.purchaseResourceMultiplier model.inventory level } ! []
+
         PurchaseClickMultiplier ->
             { model | inventory = Inventory.purchaseClickMultiplier model.inventory } ! []
