@@ -13,7 +13,7 @@ module Data.Resource
         , withIncomeRateMultiplier
         )
 
-import Data.Currency as Currency exposing (Currency(..))
+import Data.Currency as Currency
 import Data.IncomeRate as IncomeRate exposing (IncomeRate(..))
 import Data.Increasable as Increasable exposing (Count(..), Increasable, Purchased(..), Total(..))
 
@@ -33,14 +33,14 @@ type Level
 
 
 type Transaction
-    = Transaction Resource (Total Currency) Purchased
+    = Transaction Resource (Total Currency.Currency) Purchased
 
 
 type Name
     = Name String
 
 
-build : String -> Float -> Float -> Currency -> Resource
+build : String -> Float -> Float -> Currency.Currency -> Resource
 build name incomeRate multiplier startingPrice =
     { name = Name name
     , incomeRate = IncomeRate.build incomeRate
@@ -50,7 +50,7 @@ build name incomeRate multiplier startingPrice =
     }
 
 
-currentPrice : Resource -> Currency
+currentPrice : Resource -> Currency.Currency
 currentPrice =
     Increasable.currentPrice
 
@@ -73,7 +73,7 @@ purchase count resource =
     Transaction newResource totalPrice (Purchased purchased)
 
 
-transactionCost : Transaction -> Currency
+transactionCost : Transaction -> Currency.Currency
 transactionCost (Transaction _ (Total price) _) =
     price
 

@@ -5,7 +5,7 @@ module View
 
 import Data.Inventory as Inventory
 import Data.Resource as Resource
-import Html exposing (..)
+import Html exposing (Html, br, button, div, li, text, ul)
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 
