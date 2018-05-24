@@ -16,6 +16,7 @@ module Data.Inventory
         , resources
         , resourcesWithLevels
         , setAvailableFunds
+        , tickMultipliers
         )
 
 import AllDict exposing (AllDict)
@@ -65,6 +66,11 @@ initial =
         , multipliers = Multipliers.initial
         , resources = initialResources
         }
+
+
+tickMultipliers : Inventory -> Inventory
+tickMultipliers (Inventory ({ multipliers } as inventory)) =
+    Inventory { inventory | multipliers = Multipliers.tick multipliers }
 
 
 initialWithResources : List ( Resource.Level, Resource.Resource ) -> Inventory
@@ -150,7 +156,7 @@ purchaseResourceMultiplier ((Inventory ({ wallet, multipliers } as inventory)) a
         Inventory
             { inventory
                 | wallet = Wallet.subtract finalCost wallet
-                , multipliers = Multipliers.incrementResourceMultiplier multipliers level
+                , multipliers = Multipliers.incrementResourceMultiplier level multipliers
             }
     else
         inv

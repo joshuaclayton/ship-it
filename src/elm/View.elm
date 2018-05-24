@@ -29,6 +29,7 @@ view model =
         , text <| "Rate per second: " ++ toString (Inventory.currentIncomeRate model.inventory)
         , br [] []
         , resourcesList <| Inventory.resourcesWithLevels model.inventory
+        , text <| toString <| model.inventory
         ]
 
 

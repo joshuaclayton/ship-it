@@ -6,6 +6,7 @@ module Data.Increasable
         , Purchased(..)
         , Total(..)
         , buildMultiplier
+        , combineMultipliers
         , currentPrice
         , currentPriceByPurchasedCount
         , increaseTotalPurchased
@@ -51,6 +52,18 @@ buildMultiplier =
 multiplierValue : Multiplier -> Float
 multiplierValue (Multiplier v) =
     v
+
+
+combineMultipliers : List Multiplier -> Multiplier
+combineMultipliers multipliers =
+    let
+        add n1 n2 =
+            n1 + n2
+    in
+    List.map (\m -> multiplierValue m - 1) multipliers
+        |> List.sum
+        |> add 1
+        |> Multiplier
 
 
 initialTotalCount : Total Purchased

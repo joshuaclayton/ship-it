@@ -21,6 +21,7 @@ subscriptions =
     always <|
         Sub.batch
             [ Expirable.expirableSubscription (always DecrementToastMessages)
+            , Expirable.expirableSubscription (always TickMultipliers)
             , Time.every (updateFrequencyInMs * Time.millisecond) (always AccrueValue)
             ]
 
@@ -38,6 +39,9 @@ update msg model =
 
         DecrementToastMessages ->
             { model | toastMessages = Expirable.tickAll model.toastMessages } ! []
+
+        TickMultipliers ->
+            { model | inventory = Inventory.tickMultipliers model.inventory } ! []
 
         GenerateCurrency ->
             { model | inventory = Inventory.generateCurrency model.inventory } ! []

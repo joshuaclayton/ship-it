@@ -19,6 +19,7 @@ type alias Model =
 type Msg
     = NoOp
     | DecrementToastMessages
+    | TickMultipliers
     | PurchaseResource Resource.Level
     | PurchaseResourceMultiplier Resource.Level
     | PurchaseClickMultiplier

@@ -5,6 +5,7 @@ module Data.Expirable
         , expirableSubscription
         , expiresIn
         , tickAll
+        , value
         )
 
 import Time
@@ -58,3 +59,8 @@ tick (Expirable a seconds) =
 catMaybes : List (Maybe a) -> List a
 catMaybes =
     List.filterMap identity
+
+
+value : Expirable a -> a
+value (Expirable a _) =
+    a
