@@ -52,6 +52,7 @@ var commonConfig = {
 // additional webpack settings for local env (when invoked by 'npm start')
 if (isDev === true) {
   module.exports = merge(commonConfig, {
+    mode: "development",
     entry: ["webpack-dev-server/client?http://localhost:8080", entryPath],
     devServer: {
       // serve index.html in place of 404 responses
@@ -87,6 +88,7 @@ if (isDev === true) {
 // additional webpack settings for prod env (when invoked via 'npm run build')
 if (isProd === true) {
   module.exports = merge(commonConfig, {
+    mode: "production",
     entry: entryPath,
     module: {
       rules: [
