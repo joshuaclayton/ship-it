@@ -2,6 +2,7 @@ module Data.Currency
     exposing
         ( Currency(..)
         , add
+        , format
         , gte
         , map
         , multiply
@@ -9,6 +10,8 @@ module Data.Currency
         , sum
         , zero
         )
+
+import Numeral
 
 
 type Currency
@@ -53,3 +56,8 @@ zero =
 sum : List Currency -> Currency
 sum =
     List.foldl add zero
+
+
+format : Currency -> String
+format (Currency v) =
+    Numeral.format "$0,0.00" v

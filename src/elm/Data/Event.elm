@@ -12,12 +12,8 @@ type Event
 
 all : List Event
 all =
-    [ GlobalRateIncrease
-    , LocalRateIncrease Resource.L1
-    , LocalRateIncrease Resource.L2
-    , LocalRateIncrease Resource.L3
-    , LocalRateIncrease Resource.L4
-    ]
+    GlobalRateIncrease
+        :: List.map LocalRateIncrease Resource.levels
 
 
 totalOdds : Int

@@ -38,6 +38,10 @@ initial =
         , build Resource.L2 (Currency.Currency 500)
         , build Resource.L3 (Currency.Currency 5000)
         , build Resource.L4 (Currency.Currency 50000)
+        , build Resource.L5 (Currency.Currency 500000)
+        , build Resource.L6 (Currency.Currency 5000000)
+        , build Resource.L7 (Currency.Currency 50000000)
+        , build Resource.L8 (Currency.Currency 500000000)
         ]
 
 

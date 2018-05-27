@@ -1,5 +1,202 @@
-$icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
-@import '~bootstrap-sass/assets/stylesheets/bootstrap/_mixins.scss';
-@import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+@import "tape";
 
-// can add Boostrap overrides, additional Sass/CSS below...
+$body-family: 'Open Sans', sans-serif;
+$stencil: 'Stardos Stencil', cursive;
+$receipt: 'Inconsolata', monospace;
+$brown: #988571;
+$dark-brown: darken($brown, 35%);
+
+body {
+  background: $brown url(../images/cardboard.jpg) repeat;
+  font-family: $body-family;
+  color: $dark-brown;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: auto 30vw;
+  grid-template-rows: 65vh 35vh;
+  align-content: stretch;
+  height: 100vh;
+  grid-template-areas:
+    "primary-button sidebar"
+    "inventory sidebar";
+}
+
+.wallet {
+  grid-area: wallet;
+  justify-self: center;
+}
+
+.primary-button {
+  $dark-red: darken(red, 20%);
+  font-family: $stencil;
+  font-weight: bold;
+  color: $dark-red;
+  opacity: 0.65;
+  font-size: 90pt;
+  text-transform: uppercase;
+  mask-image: url(../images/knockout.png);
+  padding: 2em;
+  grid-area: primary-button;
+  justify-self: center;
+  align-self: center;
+
+  a {
+    cursor: pointer;
+    border: 8px solid $dark-red;
+    padding: 2rem 1.5rem 1.5rem;
+    border-radius: 12px;
+    user-select: none;
+    display: inline-block;
+    transform: rotate(10deg);
+    transition: all 0.1s ease-in;
+
+    &:hover {
+      transform: scale(1.1) rotate(8deg);
+    }
+  }
+}
+
+.other-inventory {
+  grid-area: inventory;
+}
+
+.purchase-multipliers h2, .resources-list h2 {
+  text-align: center;
+
+  &::before {
+    content: "- ";
+  }
+
+  &::after {
+    content: " -";
+  }
+}
+
+.purchase-multipliers {
+  list-style-type: none;
+  margin: 0;
+  font-family: $receipt;
+
+  .tape { width: 65%; }
+
+  ul {
+    padding: 0 0 1em;
+    text-align: center;
+  }
+
+  li {
+    cursor: pointer;
+    display: inline-block;
+    padding: 1em;
+    transition: all 0.2s ease-in;
+
+    .multiplier-icon {
+      mask-image: url(../images/knockout.png);
+      transition: all 0.1s ease-in;
+    }
+
+    &.disabled {
+      cursor: default;
+      opacity: 0.3;
+      transition: all 0.2s ease-in;
+    }
+
+    span {
+      display: none;
+    }
+
+    &:hover {
+      .multiplier-icon {
+        transform: scale(1.2);
+      }
+    }
+    &:not(.disabled):hover {
+      background: rgba(255, 255, 128, 0.6);
+      mask-image: url(../images/knockout.png);
+      border-bottom-left-radius: 90px 2px;
+      border-bottom-right-radius: 120px 4px;
+      border-top-left-radius: 250px 10px;
+      border-top-right-radius: 80px 1px;
+    }
+  }
+}
+
+.resources-list {
+  overflow-y: scroll;
+  grid-area: sidebar;
+  font-size: 0.9em;
+  font-family: $receipt;
+
+  .tape { width: 90%; }
+
+  .current-funds {
+    text-align: center;
+    font-size: 2.5em;
+    margin: 0;
+    padding: 0;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0 0 1em;
+    list-style-type: none;
+
+    li {
+      padding: 0.5em 1em;
+      margin: .5em;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease-in;
+      display: flex;
+      justify-content: space-around;
+      align-content: stretch;
+
+      .multiplier-icon {
+        align-self: center;
+        flex-basis: 1.75em;
+        mask-image: url(../images/knockout.png);
+      }
+
+      .name-and-price {
+        flex-basis: 80%;
+      }
+
+      &.disabled {
+        cursor: default;
+        opacity: 0.3;
+        transition: all 0.2s ease-in;
+      }
+
+      &:not(.disabled):hover {
+        background: rgba(255, 255, 128, 0.6);
+        mask-image: url(../images/knockout.png);
+        border-bottom-left-radius: 90px 2px;
+        border-bottom-right-radius: 120px 4px;
+        border-top-left-radius: 250px 10px;
+        border-top-right-radius: 80px 1px;
+      }
+
+      h3 {
+        text-transform: uppercase;
+        font-weight: normal;
+        letter-spacing: 0.05em;
+        font-size: 1em;
+        padding: 0;
+        margin: 0;
+      }
+
+      p.current-price {
+        font-size: 1.75em;
+        margin: 0;
+      }
+
+      p.current-count {
+        text-align: right;
+        font-size: 3em;
+        margin: 0;
+      }
+    }
+  }
+}

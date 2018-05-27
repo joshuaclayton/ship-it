@@ -3,12 +3,14 @@ module Data.Inventory
         ( Inventory
         , accrueValue
         , availableFunds
+        , canSpend
         , clickAmount
         , clickMultiplierCost
         , currentIncomeRate
         , generateCurrency
         , initial
         , initialWithResources
+        , nameFromLevel
         , purchaseClickMultiplier
         , purchaseResource
         , purchaseResourceMultiplier
@@ -192,6 +194,11 @@ purchaseResource count level (Inventory ({ resources, wallet } as inventory)) =
                 Inventory inventory
 
 
+canSpend : Currency.Currency -> Inventory -> Bool
+canSpend cost (Inventory { wallet }) =
+    canPayFor cost wallet
+
+
 canPayFor : Currency.Currency -> Wallet -> Bool
 canPayFor cost wallet =
     Currency.gte (Wallet.toCurrency wallet) cost
@@ -200,8 +207,40 @@ canPayFor cost wallet =
 initialResources : Resources
 initialResources =
     AllDict.fromList toString
-        [ ( Resource.L1, Resource.build "Cursor" 0.1 1.07 (Currency.Currency 15) )
-        , ( Resource.L2, Resource.build "Backpack" 1 1.07 (Currency.Currency 100) )
-        , ( Resource.L3, Resource.build "Skateboard" 8 1.07 (Currency.Currency 1100) )
-        , ( Resource.L4, Resource.build "Bicycle" 47 1.07 (Currency.Currency 12000) )
+        [ ( Resource.L1, Resource.build (nameFromLevel Resource.L1) 0.1 1.07 (Currency.Currency 15) )
+        , ( Resource.L2, Resource.build (nameFromLevel Resource.L2) 1 1.07 (Currency.Currency 100) )
+        , ( Resource.L3, Resource.build (nameFromLevel Resource.L3) 8 1.07 (Currency.Currency 1100) )
+        , ( Resource.L4, Resource.build (nameFromLevel Resource.L4) 47 1.07 (Currency.Currency 12000) )
+        , ( Resource.L5, Resource.build (nameFromLevel Resource.L5) 329 1.07 (Currency.Currency 130000) )
+        , ( Resource.L6, Resource.build (nameFromLevel Resource.L6) 950 1.07 (Currency.Currency 2000000) )
+        , ( Resource.L7, Resource.build (nameFromLevel Resource.L7) 4050 1.07 (Currency.Currency 50000000) )
+        , ( Resource.L8, Resource.build (nameFromLevel Resource.L8) 15000 1.07 (Currency.Currency 200000000) )
         ]
+
+
+nameFromLevel : Resource.Level -> String
+nameFromLevel level =
+    case level of
+        Resource.L1 ->
+            "Bike"
+
+        Resource.L2 ->
+            "Motorcycle"
+
+        Resource.L3 ->
+            "Car"
+
+        Resource.L4 ->
+            "Plane"
+
+        Resource.L5 ->
+            "Train"
+
+        Resource.L6 ->
+            "Ship"
+
+        Resource.L7 ->
+            "Rocket"
+
+        Resource.L8 ->
+            "Time Machine"

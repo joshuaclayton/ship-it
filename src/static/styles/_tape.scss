@@ -1,0 +1,38 @@
+.tape {
+  position: relative;
+  padding-top: 1.5em;
+  margin: 25px auto 0;
+  border-bottom-left-radius: 180px 2px;
+  border-bottom-right-radius: 180px 4px;
+  border-top-left-radius: 3px 180px;
+  border-top-right-radius: 5px 120px;
+  background: #fff;
+  opacity: 0.82;
+}
+
+.tape:before {
+  /* position, size etc... */
+  display: block;
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 30px;
+  top: -13px;
+  left: calc(50% - 75px);
+  /* slight shadow because tape has a little depth */
+  box-shadow: 0px 0 3px rgba(0,0,0,0.1);
+  /* does anyone ever line tape up perfectly? No. */
+  transform: rotateZ(2deg);
+  /* dashed borders to give the frayed edges */
+  border-left: 1px dashed rgba(254, 254, 254, .1);
+  border-right: 1px dashed rgba(254, 254, 254, .1);
+  /* no piece of tape has ever had perfectly square corners */
+  border-top-left-radius: 100px 2px;
+  /* as a result of the tugging to cut, tape usually streaches a bit making sections more or less transparent */
+  background:
+    linear-gradient(to right,
+      rgba(254, 254, 254, .2),
+      rgba(254, 254, 254, .3),
+      rgba(254, 254, 254, .2)
+    );
+}

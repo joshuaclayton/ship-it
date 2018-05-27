@@ -6,6 +6,8 @@ module Data.Resource
         , applyTransaction
         , build
         , currentPrice
+        , levels
+        , name
         , purchase
         , totalIncomeRate
         , totalPurchasedCount
@@ -30,6 +32,15 @@ type Level
     | L2
     | L3
     | L4
+    | L5
+    | L6
+    | L7
+    | L8
+
+
+levels : List Level
+levels =
+    [ L1, L2, L3, L4, L5, L6, L7, L8 ]
 
 
 type Transaction
@@ -53,6 +64,15 @@ build name incomeRate multiplier startingPrice =
 currentPrice : Resource -> Currency.Currency
 currentPrice =
     Increasable.currentPrice
+
+
+name : Resource -> String
+name resource =
+    let
+        (Name value) =
+            resource.name
+    in
+    value
 
 
 totalPurchasedCount : Resource -> Int

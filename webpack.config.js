@@ -37,6 +37,10 @@ var commonConfig = {
       {
         test: /\.(eot|ttf|woff|woff2|svg)$/,
         use: "file-loader?publicPath=../../&name=static/css/[hash].[ext]"
+      },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: ["file-loader"]
       }
     ]
   },
@@ -77,7 +81,7 @@ if (isDev === true) {
           ]
         },
         {
-          test: /\.sc?ss$/,
+          test: /\.s?css$/,
           use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
         }
       ]
