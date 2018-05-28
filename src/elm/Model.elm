@@ -5,6 +5,7 @@ module Model
         , initial
         )
 
+import Data.Event exposing (Event)
 import Data.Expirable exposing (Expirable, SecondsRemaining(..), expiresIn)
 import Data.Inventory as Inventory
 import Data.Resource as Resource
@@ -13,6 +14,7 @@ import Data.Resource as Resource
 type alias Model =
     { toastMessages : List (Expirable String)
     , inventory : Inventory.Inventory
+    , events : List (Expirable Event)
     }
 
 
@@ -25,6 +27,9 @@ type Msg
     | PurchaseClickMultiplier
     | AccrueValue
     | GenerateCurrency
+    | RollForEvents
+    | NewEvent (Maybe Event)
+    | TickEvents
 
 
 initial : Model
@@ -34,4 +39,5 @@ initial =
         , expiresIn (SecondsRemaining 30) "This goes longer"
         ]
     , inventory = Inventory.initial
+    , events = []
     }

@@ -3,6 +3,8 @@ module View
         ( view
         )
 
+import Data.Event exposing (Event(..))
+import Data.Expirable as Expirable exposing (Expirable)
 import Data.Inventory as Inventory
 import Data.Resource as Resource
 import Html exposing (Html, br, button, div, li, text, ul)
@@ -13,7 +15,8 @@ import Model exposing (Model, Msg(..))
 view : Model -> Html Msg
 view model =
     div []
-        [ text "Hello world"
+        [ div [] <| List.map viewEvent model.events
+        , text "Hello world"
         , button [ onClick GenerateCurrency ] [ text <| "Generate " ++ toString (Inventory.clickAmount model.inventory) ]
         , button [ onClick PurchaseClickMultiplier ] [ text <| "Purchase a multiplier for " ++ toString (Inventory.clickMultiplierCost model.inventory) ]
         , br [] []
@@ -44,3 +47,13 @@ resourcesList resources =
             )
             resources
         )
+
+
+viewEvent : Expirable Event -> Html a
+viewEvent expirable =
+    case Expirable.value expirable of
+        GlobalRateIncrease ->
+            div [] [ text "Increase income rate globally" ]
+
+        LocalRateIncrease lvl ->
+            div [] [ text <| "Increase income rate of " ++ toString lvl ]

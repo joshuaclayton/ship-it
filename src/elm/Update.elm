@@ -5,9 +5,11 @@ module Update
         , update
         )
 
+import Data.Event as Event
 import Data.Expirable as Expirable
 import Data.Inventory as Inventory
 import Model exposing (Model, Msg(..))
+import Random
 import Time
 
 
@@ -22,7 +24,9 @@ subscriptions =
         Sub.batch
             [ Expirable.expirableSubscription (always DecrementToastMessages)
             , Expirable.expirableSubscription (always TickMultipliers)
+            , Expirable.expirableSubscription (always TickEvents)
             , Time.every (updateFrequencyInMs * Time.millisecond) (always AccrueValue)
+            , Time.every (15 * Time.second) (always RollForEvents)
             ]
 
 
@@ -60,3 +64,19 @@ update msg model =
 
         PurchaseClickMultiplier ->
             { model | inventory = Inventory.purchaseClickMultiplier model.inventory } ! []
+
+        RollForEvents ->
+            model ! [ Random.generate NewEvent Event.optionalRandom ]
+
+        NewEvent Nothing ->
+            model ! []
+
+        NewEvent (Just event) ->
+            { model
+                | events =
+                    Expirable.expiresIn (Expirable.SecondsRemaining 10) event :: model.events
+            }
+                ! []
+
+        TickEvents ->
+            { model | events = Expirable.tickAll model.events } ! []
