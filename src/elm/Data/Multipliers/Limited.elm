@@ -23,6 +23,8 @@ initial =
 type MultiplierType
     = IncreaseGlobalProduction
     | IncreaseLevelProduction Resource.Level
+    | DecreaseGlobalCost
+    | DecreaseLevelCost Resource.Level
 
 
 clickMultipliers : Model -> Increasable.Multiplier
@@ -57,4 +59,13 @@ toResourceLevelMultiplier level multiplierType =
             if l == level then
                 Increasable.buildMultiplier 7
             else
-                Increasable.buildMultiplier 1
+                Increasable.noOp
+
+        DecreaseGlobalCost ->
+            Increasable.buildMultiplier 0.9
+
+        DecreaseLevelCost l ->
+            if l == level then
+                Increasable.buildMultiplier 0.77
+            else
+                Increasable.noOp

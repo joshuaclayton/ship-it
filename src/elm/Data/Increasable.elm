@@ -13,6 +13,7 @@ module Data.Increasable
         , incrementTotalPurchased
         , initialTotalCount
         , multiplierValue
+        , noOp
         , purchase
         , totalPurchasedCount
         )
@@ -47,6 +48,11 @@ type alias Increasable a =
 buildMultiplier : Float -> Multiplier
 buildMultiplier =
     Multiplier
+
+
+noOp : Multiplier
+noOp =
+    buildMultiplier 1
 
 
 multiplierValue : Multiplier -> Float

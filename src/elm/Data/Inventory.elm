@@ -24,7 +24,9 @@ module Data.Inventory
 import AllDict exposing (AllDict)
 import Data.Currency as Currency
 import Data.IncomeRate as IncomeRate
+import Data.Increasable as Increasable
 import Data.Multipliers as Multipliers
+import Data.Multipliers.Limited as LimitedMultipliers
 import Data.Resource as Resource
 import Data.Wallet as Wallet exposing (Wallet)
 
@@ -37,6 +39,7 @@ type Inventory
     = Inventory
         { wallet : Wallet
         , multipliers : Multipliers.Model
+        , discounts : LimitedMultipliers.Model
         , resources : Resources
         }
 
@@ -66,6 +69,7 @@ initial =
     Inventory
         { wallet = Wallet.initial
         , multipliers = Multipliers.initial
+        , discounts = LimitedMultipliers.initial
         , resources = initialResources
         }
 
@@ -80,6 +84,7 @@ initialWithResources resources =
     Inventory
         { wallet = Wallet.initial
         , multipliers = Multipliers.initial
+        , discounts = LimitedMultipliers.initial
         , resources = AllDict.fromList toString resources
         }
 
@@ -165,7 +170,7 @@ purchaseResourceMultiplier ((Inventory ({ wallet, multipliers } as inventory)) a
 
 
 purchaseResource : Int -> Resource.Level -> Inventory -> Inventory
-purchaseResource count level (Inventory ({ resources, wallet } as inventory)) =
+purchaseResource count level (Inventory ({ resources, discounts, wallet } as inventory)) =
     case AllDict.get level resources of
         Nothing ->
             Inventory inventory
@@ -181,8 +186,11 @@ purchaseResource count level (Inventory ({ resources, wallet } as inventory)) =
                 newResources =
                     AllDict.update level (always <| Just newResource) resources
 
-                finalCost =
+                preDiscountCost =
                     Resource.transactionCost transaction
+
+                finalCost =
+                    applyPurchaseDiscounts level discounts preDiscountCost
             in
             if wallet |> canPayFor finalCost then
                 Inventory
@@ -192,6 +200,14 @@ purchaseResource count level (Inventory ({ resources, wallet } as inventory)) =
                     }
             else
                 Inventory inventory
+
+
+applyPurchaseDiscounts : Resource.Level -> LimitedMultipliers.Model -> Currency.Currency -> Currency.Currency
+applyPurchaseDiscounts level discounts preDiscountCost =
+    level
+        |> LimitedMultipliers.resourceLevelMultipliers discounts
+        |> Increasable.multiplierValue
+        |> Currency.multiply preDiscountCost
 
 
 canSpend : Currency.Currency -> Inventory -> Bool
