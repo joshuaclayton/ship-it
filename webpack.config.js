@@ -102,7 +102,7 @@ if (isProd === true) {
           use: "elm-webpack-loader"
         },
         {
-          test: /\.sc?ss$/,
+          test: /\.s?css$/,
           use: ExtractTextPlugin.extract({
             fallback: "style-loader",
             use: ["css-loader", "postcss-loader", "sass-loader"]
@@ -117,8 +117,8 @@ if (isProd === true) {
       }),
       new CopyWebpackPlugin([
         {
-          from: "src/static/img/",
-          to: "static/img/"
+          from: "src/static/images/",
+          to: "static/images/"
         },
         {
           from: "src/favicon.ico"
