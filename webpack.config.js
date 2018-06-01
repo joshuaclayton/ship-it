@@ -117,8 +117,9 @@ if (isProd === true) {
       }),
       new CopyWebpackPlugin([
         {
-          from: "src/static/images/",
-          to: "static/images/"
+          from: "src/static/styles/",
+          to: "static/css/[hash].[ext]",
+          test: /(png|jpg)$/
         },
         {
           from: "src/favicon.ico"
