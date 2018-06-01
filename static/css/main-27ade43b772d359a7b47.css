@@ -331,7 +331,7 @@ template {
   background: linear-gradient(to right, rgba(254, 254, 254, 0.2), rgba(254, 254, 254, 0.3), rgba(254, 254, 254, 0.2)); }
 
 body {
-  background: #bb8355 url(/static/images/cardboard.jpg) repeat;
+  background: #bb8355 url(b2a667857666ee1d0b9ba382e877afbb.jpg) repeat;
   font-family: "Open Sans", sans-serif;
   color: #432d1b; }
 
@@ -354,8 +354,8 @@ body {
   opacity: 0.65;
   font-size: 90pt;
   text-transform: uppercase;
-  -webkit-mask-image: url(/static/images/knockout.png);
-          mask-image: url(/static/images/knockout.png);
+  -webkit-mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
+          mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
   padding: 2em;
   grid-area: primary-button;
   justify-self: center;
@@ -402,8 +402,8 @@ body {
     padding: 1em;
     transition: all 0.2s ease-in; }
     .purchase-multipliers li .multiplier-icon {
-      -webkit-mask-image: url(/static/images/knockout.png);
-              mask-image: url(/static/images/knockout.png);
+      -webkit-mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
+              mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
       transition: all 0.1s ease-in; }
     .purchase-multipliers li.disabled {
       cursor: default;
@@ -416,8 +416,8 @@ body {
               transform: scale(1.2); }
     .purchase-multipliers li:not(.disabled):hover {
       background: rgba(255, 255, 128, 0.6);
-      -webkit-mask-image: url(/static/images/knockout.png);
-              mask-image: url(/static/images/knockout.png);
+      -webkit-mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
+              mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
       border-bottom-left-radius: 90px 2px;
       border-bottom-right-radius: 120px 4px;
       border-top-left-radius: 250px 10px;
@@ -454,8 +454,8 @@ body {
       .resources-list ul li .multiplier-icon {
         align-self: center;
         flex-basis: 1.75em;
-        -webkit-mask-image: url(/static/images/knockout.png);
-                mask-image: url(/static/images/knockout.png); }
+        -webkit-mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
+                mask-image: url(cc9a3d81b8363953400e4ab94797248c.png); }
       .resources-list ul li .name-and-price {
         flex-basis: 80%; }
       .resources-list ul li.disabled {
@@ -464,8 +464,8 @@ body {
         transition: all 0.2s ease-in; }
       .resources-list ul li:not(.disabled):hover {
         background: rgba(255, 255, 128, 0.6);
-        -webkit-mask-image: url(/static/images/knockout.png);
-                mask-image: url(/static/images/knockout.png);
+        -webkit-mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
+                mask-image: url(cc9a3d81b8363953400e4ab94797248c.png);
         border-bottom-left-radius: 90px 2px;
         border-bottom-right-radius: 120px 4px;
         border-top-left-radius: 250px 10px;
