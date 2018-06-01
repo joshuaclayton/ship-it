@@ -30,6 +30,7 @@ type Msg
     | RollForEvents
     | NewEvent (Maybe Event)
     | TickEvents
+    | AddEvent Event
 
 
 initial : Model

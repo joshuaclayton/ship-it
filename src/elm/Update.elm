@@ -74,6 +74,13 @@ update msg model =
             }
                 ! []
 
+        AddEvent event ->
+            { model
+                | inventory = Inventory.addLimitedMultiplier (Event.toMultiplierType event) model.inventory
+                , events = []
+            }
+                ! []
+
         TickEvents ->
             { model | events = Expirable.tickAll model.events } ! []
 

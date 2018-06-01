@@ -1,6 +1,7 @@
 module Data.Multipliers
     exposing
         ( Model
+        , addLimitedMultiplier
         , clickAmount
         , clickMultiplierCost
         , increaseMultiplierForLevel
@@ -65,6 +66,11 @@ increaseMultiplierForLevel (Multipliers _ resourcesMultipliers limitedMultiplier
         [ ResourceMultiplier.resourceLevelMultipliers resourcesMultipliers level
         , LimitedMultiplier.resourceLevelMultipliers limitedMultipliers level
         ]
+
+
+addLimitedMultiplier : LimitedMultiplier.MultiplierType -> Model -> Model
+addLimitedMultiplier multiplierType model =
+    mapLimited (\xs -> LimitedMultiplier.build multiplierType :: xs) model
 
 
 clickAmount : Model -> Currency.Currency

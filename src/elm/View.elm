@@ -4,7 +4,7 @@ module View
         )
 
 import Data.Currency as Currency
-import Data.Event exposing (Event(..))
+import Data.Event exposing (Event(..), Offset(..))
 import Data.Expirable as Expirable exposing (Expirable)
 import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
@@ -12,23 +12,25 @@ import Data.Inventory as Inventory
 import Data.Resource as Resource
 import FontAwesome as FA
 import Html exposing (Html, a, div, h2, h3, li, p, span, text, ul)
-import Html.Attributes exposing (class, classList, title)
+import Html.Attributes exposing (class, classList, style, title)
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 
 
 view : Model -> Html Msg
 view model =
-    div [ class "container" ]
-        [ div [] <| List.map viewEvent model.events
-        , div [ class "primary-button" ]
-            [ generateCurrencyButton model.inventory
-            ]
-        , div [ class "other-inventory" ]
-            [ purchaseMultiplierButtons model.inventory
-            ]
-        , div [ class "resources-list" ]
-            [ resourcesList model.inventory
+    div []
+        [ div [ class "events-container" ] <| List.map viewEvent model.events
+        , div [ class "container" ]
+            [ div [ class "primary-button" ]
+                [ generateCurrencyButton model.inventory
+                ]
+            , div [ class "other-inventory" ]
+                [ purchaseMultiplierButtons model.inventory
+                ]
+            , div [ class "resources-list" ]
+                [ resourcesList model.inventory
+                ]
             ]
         ]
 
@@ -75,7 +77,7 @@ purchaseClickMultiplier inventory =
         , title <| "Purchase a click multiplier for " ++ Currency.format (Inventory.clickMultiplierCost inventory)
         , classList [ ( "disabled", not <| Inventory.canSpend (Inventory.clickMultiplierCost inventory) inventory ) ]
         ]
-        [ FA.iconWithOptions FA.suitcase FA.Solid [ FA.Size <| FA.Mult 2 ] [ class "multiplier-icon" ]
+        [ suitcaseIcon
         , text " "
         , span [] [ text <| "Purchase a click multiplier for " ++ Currency.format (Inventory.clickMultiplierCost inventory) ]
         ]
@@ -122,14 +124,35 @@ resources inventory =
         ]
 
 
-viewEvent : Expirable Event -> Html a
+viewEvent : Expirable Event -> Html Msg
 viewEvent expirable =
-    case Expirable.value expirable of
-        GlobalRateIncrease ->
-            div [] [ text "Increase income rate globally" ]
+    let
+        event =
+            Expirable.value expirable
+    in
+    case event of
+        GlobalRateIncrease offset ->
+            a
+                [ class "event"
+                , offsetToStyle offset
+                , title "Increase income rate globally"
+                , onClick <| AddEvent event
+                ]
+                [ suitcaseIcon ]
 
-        LocalRateIncrease level ->
-            div [] [ text <| "Increase income rate of " ++ Config.levelName level ]
+        LocalRateIncrease offset level ->
+            a
+                [ class "event"
+                , offsetToStyle offset
+                , title <| "Increase income rate of " ++ Config.levelName level
+                , onClick <| AddEvent event
+                ]
+                [ levelToIcon level ]
+
+
+offsetToStyle : Offset -> Html.Attribute a
+offsetToStyle (Offset xpos ypos) =
+    style [ ( "top", toString ypos ++ "vh" ), ( "left", toString xpos ++ "vw" ) ]
 
 
 resourceItem : Inventory.Inventory -> Config.Level -> Resource.Resource -> Html Msg
@@ -145,3 +168,8 @@ resourceItem inventory level resource_ =
             ]
         , p [ class "current-count" ] [ text <| toString (Resource.totalPurchasedCount resource_) ]
         ]
+
+
+suitcaseIcon : Html a
+suitcaseIcon =
+    FA.iconWithOptions FA.suitcase FA.Solid [ FA.Size <| FA.Mult 2 ] [ class "multiplier-icon" ]

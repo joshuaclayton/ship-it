@@ -16,6 +16,7 @@ module Data.GameConfiguration
         , levelName
         , levelResourceMultiplierCost
         , limitedDecreasableMultiplier
+        , limitedEventDuration
         , limitedIncreasableMultiplier
         , randomEventConfig
         , resourceMultiplierConfig
@@ -245,6 +246,11 @@ limitedIncreasableMultiplier =
 limitedDecreasableMultiplier : LimitedMultiplier
 limitedDecreasableMultiplier =
     Increasable.buildMultiplier 0.8
+
+
+limitedEventDuration : Float
+limitedEventDuration =
+    75
 
 
 resourceMultiplierConfig : ResourceMultiplier

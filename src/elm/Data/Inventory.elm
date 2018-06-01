@@ -2,6 +2,7 @@ module Data.Inventory
     exposing
         ( Inventory
         , accrueValue
+        , addLimitedMultiplier
         , availableFunds
         , canSpend
         , clickAmount
@@ -208,6 +209,11 @@ applyPurchaseDiscounts level discounts preDiscountCost =
         |> LimitedMultipliers.resourceLevelMultipliers discounts
         |> Increasable.multiplierValue
         |> Currency.multiply preDiscountCost
+
+
+addLimitedMultiplier : LimitedMultipliers.MultiplierType -> Inventory -> Inventory
+addLimitedMultiplier multiplierType (Inventory ({ multipliers } as inventory)) =
+    Inventory { inventory | multipliers = Multipliers.addLimitedMultiplier multiplierType multipliers }
 
 
 canSpend : Currency.Currency -> Inventory -> Bool

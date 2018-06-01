@@ -1,19 +1,41 @@
-module Data.Event exposing (Event(..), optionalRandom, random)
+module Data.Event
+    exposing
+        ( Event(..)
+        , Offset(..)
+        , optionalRandom
+        , random
+        , toMultiplierType
+        )
 
 import Data.GameConfiguration as Config
+import Data.Multipliers.Limited as Multipliers
 import Random exposing (Generator)
 import Random.Extra as Random
 
 
 type Event
-    = GlobalRateIncrease
-    | LocalRateIncrease Config.Level
+    = GlobalRateIncrease Offset
+    | LocalRateIncrease Offset Config.Level
 
 
-all : List Event
-all =
-    GlobalRateIncrease
-        :: List.map LocalRateIncrease Config.allLevels
+type Offset
+    = Offset Int Int
+
+
+toMultiplierType : Event -> Multipliers.MultiplierType
+toMultiplierType event =
+    case event of
+        GlobalRateIncrease _ ->
+            Multipliers.IncreaseGlobalProduction
+
+        LocalRateIncrease _ level ->
+            Multipliers.IncreaseLevelProduction level
+
+
+all : Offset -> List Event
+all offset =
+    GlobalRateIncrease offset
+        :: List.map (LocalRateIncrease offset) Config.allLevels
 
 
 totalOdds : Int
@@ -29,5 +51,20 @@ optionalRandom =
 
 random : Generator Event
 random =
-    Random.sample all
-        |> Random.map (Maybe.withDefault GlobalRateIncrease)
+    randomOffset
+        |> Random.andThen
+            (\offset ->
+                all offset
+                    |> Random.sample
+                    |> Random.map (Maybe.withDefault <| GlobalRateIncrease offset)
+            )
+
+
+randomOffset : Generator Offset
+randomOffset =
+    let
+        randomOffsetValue =
+            Random.sample (List.range 10 85)
+                |> Random.map (Maybe.withDefault 50)
+    in
+    Random.map2 Offset randomOffsetValue randomOffsetValue

@@ -12,6 +12,41 @@ body {
   color: $dark-brown;
 }
 
+.events-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  .event {
+    $size: 60px;
+    z-index: 1;
+    margin-left: -1.25*$size;
+    margin-top: -1.25*$size;
+    position: absolute;
+
+    .multiplier-icon {
+      $gray: darken(grey, 35%);
+      border-radius: 50%;
+      border: $size/4 solid $gray;
+      color: $gray;
+      cursor: pointer;
+      font-size: $size;
+      height: $size;
+      mask-image: url(knockout.png);
+      opacity: 0.7;
+      padding: $size/2;
+      transition: all 0.1s ease-in;
+      width: $size;
+
+      &:hover {
+        transform: rotate(10deg);
+      }
+    }
+  }
+}
+
 .container {
   display: grid;
   grid-template-columns: auto 30vw;

@@ -1,6 +1,8 @@
 module Data.Multipliers.Limited
     exposing
         ( Model
+        , MultiplierType(..)
+        , build
         , clickMultipliers
         , initial
         , resourceLevelMultipliers
@@ -25,6 +27,11 @@ type MultiplierType
     | IncreaseLevelProduction Config.Level
     | DecreaseGlobalCost
     | DecreaseLevelCost Config.Level
+
+
+build : MultiplierType -> Expirable.Expirable MultiplierType
+build =
+    Expirable.expiresIn (Expirable.SecondsRemaining Config.limitedEventDuration)
 
 
 clickMultipliers : Model -> Increasable.Multiplier
