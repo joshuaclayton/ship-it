@@ -1,19 +1,19 @@
 module Data.Event exposing (Event(..), optionalRandom, random)
 
-import Data.Resource as Resource
+import Data.GameConfiguration as Config
 import Random exposing (Generator)
 import Random.Extra as Random
 
 
 type Event
     = GlobalRateIncrease
-    | LocalRateIncrease Resource.Level
+    | LocalRateIncrease Config.Level
 
 
 all : List Event
 all =
     GlobalRateIncrease
-        :: List.map LocalRateIncrease Resource.levels
+        :: List.map LocalRateIncrease Config.allLevels
 
 
 totalOdds : Int

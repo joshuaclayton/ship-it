@@ -10,7 +10,6 @@ module Data.Inventory
         , generateCurrency
         , initial
         , initialWithResources
-        , nameFromLevel
         , purchaseClickMultiplier
         , purchaseResource
         , purchaseResourceMultiplier
@@ -21,8 +20,9 @@ module Data.Inventory
         , tickMultipliers
         )
 
-import AllDict exposing (AllDict)
+import AllDict
 import Data.Currency as Currency
+import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
 import Data.Increasable as Increasable
 import Data.Multipliers as Multipliers
@@ -32,7 +32,7 @@ import Data.Wallet as Wallet exposing (Wallet)
 
 
 type alias Resources =
-    AllDict Resource.Level Resource.Resource String
+    Config.LevelDict Resource.Resource
 
 
 type Inventory
@@ -54,7 +54,7 @@ clickMultiplierCost (Inventory { multipliers }) =
     Multipliers.clickMultiplierCost multipliers
 
 
-resourceMultiplierCost : Inventory -> Resource.Level -> Currency.Currency
+resourceMultiplierCost : Inventory -> Config.Level -> Currency.Currency
 resourceMultiplierCost (Inventory { multipliers }) =
     Multipliers.resourceMultiplierCost multipliers
 
@@ -79,7 +79,7 @@ tickMultipliers (Inventory ({ multipliers } as inventory)) =
     Inventory { inventory | multipliers = Multipliers.tick multipliers }
 
 
-initialWithResources : List ( Resource.Level, Resource.Resource ) -> Inventory
+initialWithResources : List ( Config.Level, Resource.Resource ) -> Inventory
 initialWithResources resources =
     Inventory
         { wallet = Wallet.initial
@@ -132,7 +132,7 @@ resources (Inventory { resources }) =
     AllDict.values resources
 
 
-resourcesWithLevels : Inventory -> List ( Resource.Level, Resource.Resource )
+resourcesWithLevels : Inventory -> List ( Config.Level, Resource.Resource )
 resourcesWithLevels (Inventory { resources }) =
     AllDict.toList resources
 
@@ -153,7 +153,7 @@ purchaseClickMultiplier ((Inventory ({ wallet, multipliers } as inventory)) as i
         inv
 
 
-purchaseResourceMultiplier : Inventory -> Resource.Level -> Inventory
+purchaseResourceMultiplier : Inventory -> Config.Level -> Inventory
 purchaseResourceMultiplier ((Inventory ({ wallet, multipliers } as inventory)) as inv) level =
     let
         finalCost =
@@ -169,7 +169,7 @@ purchaseResourceMultiplier ((Inventory ({ wallet, multipliers } as inventory)) a
         inv
 
 
-purchaseResource : Int -> Resource.Level -> Inventory -> Inventory
+purchaseResource : Int -> Config.Level -> Inventory -> Inventory
 purchaseResource count level (Inventory ({ resources, discounts, wallet } as inventory)) =
     case AllDict.get level resources of
         Nothing ->
@@ -202,7 +202,7 @@ purchaseResource count level (Inventory ({ resources, discounts, wallet } as inv
                 Inventory inventory
 
 
-applyPurchaseDiscounts : Resource.Level -> LimitedMultipliers.Model -> Currency.Currency -> Currency.Currency
+applyPurchaseDiscounts : Config.Level -> LimitedMultipliers.Model -> Currency.Currency -> Currency.Currency
 applyPurchaseDiscounts level discounts preDiscountCost =
     level
         |> LimitedMultipliers.resourceLevelMultipliers discounts
@@ -222,41 +222,11 @@ canPayFor cost wallet =
 
 initialResources : Resources
 initialResources =
-    AllDict.fromList toString
-        [ ( Resource.L1, Resource.build (nameFromLevel Resource.L1) 0.1 1.07 (Currency.Currency 15) )
-        , ( Resource.L2, Resource.build (nameFromLevel Resource.L2) 1 1.07 (Currency.Currency 100) )
-        , ( Resource.L3, Resource.build (nameFromLevel Resource.L3) 8 1.07 (Currency.Currency 1100) )
-        , ( Resource.L4, Resource.build (nameFromLevel Resource.L4) 47 1.07 (Currency.Currency 12000) )
-        , ( Resource.L5, Resource.build (nameFromLevel Resource.L5) 329 1.07 (Currency.Currency 130000) )
-        , ( Resource.L6, Resource.build (nameFromLevel Resource.L6) 950 1.07 (Currency.Currency 2000000) )
-        , ( Resource.L7, Resource.build (nameFromLevel Resource.L7) 4050 1.07 (Currency.Currency 50000000) )
-        , ( Resource.L8, Resource.build (nameFromLevel Resource.L8) 15000 1.07 (Currency.Currency 200000000) )
-        ]
-
-
-nameFromLevel : Resource.Level -> String
-nameFromLevel level =
-    case level of
-        Resource.L1 ->
-            "Bike"
-
-        Resource.L2 ->
-            "Motorcycle"
-
-        Resource.L3 ->
-            "Car"
-
-        Resource.L4 ->
-            "Plane"
-
-        Resource.L5 ->
-            "Train"
-
-        Resource.L6 ->
-            "Ship"
-
-        Resource.L7 ->
-            "Rocket"
-
-        Resource.L8 ->
-            "Time Machine"
+    Config.buildLevelDict
+        (\level ->
+            Resource.build
+                (Config.levelName level)
+                (Config.levelIncomeRate level)
+                (Config.increasableMultiplier level)
+                (Config.levelBaseCost level)
+        )

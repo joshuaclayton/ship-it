@@ -1,8 +1,8 @@
 module Data.MultipliersTest exposing (..)
 
 import Data.Currency as Currency
+import Data.GameConfiguration as Config
 import Data.Multipliers as Multipliers
-import Data.Resource as Resource
 import Expect
 import Test exposing (..)
 
@@ -43,12 +43,12 @@ suite =
             [ test "defaults to 50 for the first level" <|
                 \_ ->
                     Expect.equal
-                        (Multipliers.resourceMultiplierCost Multipliers.initial Resource.L1)
+                        (Multipliers.resourceMultiplierCost Multipliers.initial Config.L1)
                         (Currency.Currency 50)
             , test "returns the correct value when incremented" <|
                 \_ ->
                     Expect.equal
-                        (Multipliers.resourceMultiplierCost (Multipliers.incrementResourceMultiplier Resource.L1 Multipliers.initial) Resource.L1)
+                        (Multipliers.resourceMultiplierCost (Multipliers.incrementResourceMultiplier Config.L1 Multipliers.initial) Config.L1)
                         (Currency.Currency 150)
             ]
         ]

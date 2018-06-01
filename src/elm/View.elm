@@ -6,6 +6,7 @@ module View
 import Data.Currency as Currency
 import Data.Event exposing (Event(..))
 import Data.Expirable as Expirable exposing (Expirable)
+import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
 import Data.Inventory as Inventory
 import Data.Resource as Resource
@@ -48,17 +49,17 @@ purchaseMultiplierButtons inventory =
             [ h2 [] [ text "Upgrades" ]
             , ul []
                 (purchaseClickMultiplier inventory
-                    :: List.map (purchaseMultiplierButton inventory) Resource.levels
+                    :: List.map (purchaseMultiplierButton inventory) Config.allLevels
                 )
             ]
         ]
 
 
-purchaseMultiplierButton : Inventory.Inventory -> Resource.Level -> Html Msg
+purchaseMultiplierButton : Inventory.Inventory -> Config.Level -> Html Msg
 purchaseMultiplierButton inventory level =
     li
         [ onClick <| PurchaseResourceMultiplier level
-        , title <| "Upgrade your " ++ Inventory.nameFromLevel level ++ " for " ++ Currency.format (Inventory.resourceMultiplierCost inventory level)
+        , title <| "Upgrade your " ++ Config.levelName level ++ " for " ++ Currency.format (Inventory.resourceMultiplierCost inventory level)
         , classList [ ( "disabled", not <| Inventory.canSpend (Inventory.resourceMultiplierCost inventory level) inventory ) ]
         ]
         [ levelToIcon level
@@ -80,34 +81,11 @@ purchaseClickMultiplier inventory =
         ]
 
 
-levelToIcon : Resource.Level -> Html a
+levelToIcon : Config.Level -> Html a
 levelToIcon level =
     let
         icon =
-            case level of
-                Resource.L1 ->
-                    FA.bicycle
-
-                Resource.L2 ->
-                    FA.motorcycle
-
-                Resource.L3 ->
-                    FA.car
-
-                Resource.L4 ->
-                    FA.plane
-
-                Resource.L5 ->
-                    FA.train
-
-                Resource.L6 ->
-                    FA.ship
-
-                Resource.L7 ->
-                    FA.rocket
-
-                Resource.L8 ->
-                    FA.clock
+            Config.levelIcon level
     in
     FA.iconWithOptions icon FA.Solid [ FA.Size <| FA.Mult 2 ] [ class "multiplier-icon" ]
 
@@ -151,10 +129,10 @@ viewEvent expirable =
             div [] [ text "Increase income rate globally" ]
 
         LocalRateIncrease level ->
-            div [] [ text <| "Increase income rate of " ++ Inventory.nameFromLevel level ]
+            div [] [ text <| "Increase income rate of " ++ Config.levelName level ]
 
 
-resourceItem : Inventory.Inventory -> Resource.Level -> Resource.Resource -> Html Msg
+resourceItem : Inventory.Inventory -> Config.Level -> Resource.Resource -> Html Msg
 resourceItem inventory level resource_ =
     li
         [ onClick <| PurchaseResource level

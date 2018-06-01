@@ -7,8 +7,8 @@ module Model
 
 import Data.Event exposing (Event)
 import Data.Expirable exposing (Expirable, SecondsRemaining(..), expiresIn)
+import Data.GameConfiguration as Config
 import Data.Inventory as Inventory
-import Data.Resource as Resource
 
 
 type alias Model =
@@ -22,8 +22,8 @@ type Msg
     = NoOp
     | DecrementToastMessages
     | TickMultipliers
-    | PurchaseResource Resource.Level
-    | PurchaseResourceMultiplier Resource.Level
+    | PurchaseResource Config.Level
+    | PurchaseResourceMultiplier Config.Level
     | PurchaseClickMultiplier
     | AccrueValue
     | GenerateCurrency

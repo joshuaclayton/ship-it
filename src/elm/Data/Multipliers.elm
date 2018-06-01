@@ -13,11 +13,11 @@ module Data.Multipliers
 
 import Data.Currency as Currency
 import Data.Expirable as Expirable
+import Data.GameConfiguration as Config
 import Data.Increasable as Increasable
 import Data.Multipliers.Click as ClickMultiplier
 import Data.Multipliers.Limited as LimitedMultiplier
 import Data.Multipliers.Resource as ResourceMultiplier
-import Data.Resource as Resource
 
 
 type Model
@@ -54,12 +54,12 @@ incrementClickMultiplier =
     mapClick Increasable.incrementTotalPurchased
 
 
-incrementResourceMultiplier : Resource.Level -> Model -> Model
+incrementResourceMultiplier : Config.Level -> Model -> Model
 incrementResourceMultiplier level =
     mapResources (ResourceMultiplier.incrementTotalPurchased level)
 
 
-increaseMultiplierForLevel : Model -> Resource.Level -> Increasable.Multiplier
+increaseMultiplierForLevel : Model -> Config.Level -> Increasable.Multiplier
 increaseMultiplierForLevel (Multipliers _ resourcesMultipliers limitedMultipliers) level =
     Increasable.combineMultipliers
         [ ResourceMultiplier.resourceLevelMultipliers resourcesMultipliers level
@@ -84,6 +84,6 @@ clickMultiplierCost (Multipliers clickMultiplier _ _) =
     Increasable.currentPrice clickMultiplier
 
 
-resourceMultiplierCost : Model -> Resource.Level -> Currency.Currency
+resourceMultiplierCost : Model -> Config.Level -> Currency.Currency
 resourceMultiplierCost (Multipliers _ resourcesMultipliers _) level =
     ResourceMultiplier.currentPrice resourcesMultipliers level

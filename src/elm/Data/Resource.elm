@@ -1,12 +1,10 @@
 module Data.Resource
     exposing
-        ( Level(..)
-        , Resource
+        ( Resource
         , Transaction
         , applyTransaction
         , build
         , currentPrice
-        , levels
         , name
         , purchase
         , totalIncomeRate
@@ -27,22 +25,6 @@ type alias Resource =
         }
 
 
-type Level
-    = L1
-    | L2
-    | L3
-    | L4
-    | L5
-    | L6
-    | L7
-    | L8
-
-
-levels : List Level
-levels =
-    [ L1, L2, L3, L4, L5, L6, L7, L8 ]
-
-
 type Transaction
     = Transaction Resource (Total Currency.Currency) Purchased
 
@@ -51,11 +33,11 @@ type Name
     = Name String
 
 
-build : String -> Float -> Float -> Currency.Currency -> Resource
+build : String -> IncomeRate.IncomeRate -> Increasable.Multiplier -> Currency.Currency -> Resource
 build name incomeRate multiplier startingPrice =
     { name = Name name
-    , incomeRate = IncomeRate.build incomeRate
-    , multiplier = Increasable.buildMultiplier multiplier
+    , incomeRate = incomeRate
+    , multiplier = multiplier
     , basePrice = startingPrice
     , totalPurchased = Increasable.initialTotalCount
     }

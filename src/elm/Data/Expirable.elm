@@ -12,7 +12,7 @@ import Time
 
 
 type SecondsRemaining
-    = SecondsRemaining Int
+    = SecondsRemaining Time.Time
 
 
 type Expirable a

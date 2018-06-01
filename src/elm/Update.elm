@@ -7,6 +7,7 @@ module Update
 
 import Data.Event as Event
 import Data.Expirable as Expirable
+import Data.GameConfiguration as Config
 import Data.Inventory as Inventory
 import Model exposing (Model, Msg(..))
 import Random
@@ -25,14 +26,9 @@ subscriptions =
             [ Expirable.expirableSubscription (always DecrementToastMessages)
             , Expirable.expirableSubscription (always TickMultipliers)
             , Expirable.expirableSubscription (always TickEvents)
-            , Time.every (updateFrequencyInMs * Time.millisecond) (always AccrueValue)
-            , Time.every (15 * Time.second) (always RollForEvents)
+            , Time.every Config.updateFrequencyInMs (always AccrueValue)
+            , Time.every randomEventConfig.frequency (always RollForEvents)
             ]
-
-
-updateFrequencyInMs : Float
-updateFrequencyInMs =
-    50
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -52,7 +48,7 @@ update msg model =
 
         AccrueValue ->
             { model
-                | inventory = Inventory.accrueValue (updateFrequencyInMs / 1000) model.inventory
+                | inventory = Inventory.accrueValue (Config.updateFrequencyInMs / 1000) model.inventory
             }
                 ! []
 
@@ -74,9 +70,14 @@ update msg model =
         NewEvent (Just event) ->
             { model
                 | events =
-                    Expirable.expiresIn (Expirable.SecondsRemaining 10) event :: model.events
+                    Expirable.expiresIn (Expirable.SecondsRemaining randomEventConfig.eventVisibilityDuration) event :: model.events
             }
                 ! []
 
         TickEvents ->
             { model | events = Expirable.tickAll model.events } ! []
+
+
+randomEventConfig : Config.RandomEvent
+randomEventConfig =
+    Config.randomEventConfig

@@ -1,6 +1,8 @@
 module Data.ResourceTest exposing (..)
 
 import Data.Currency as Currency
+import Data.IncomeRate as IncomeRate
+import Data.Increasable as Increasable
 import Data.Resource as Resource
 import Expect
 import Test exposing (..)
@@ -8,12 +10,20 @@ import Test exposing (..)
 
 constantCostResource : Resource.Resource
 constantCostResource =
-    Resource.build "Constant cost resource" 1 1 (Currency.Currency 5)
+    Resource.build
+        "Constant cost resource"
+        (IncomeRate.build 1)
+        (Increasable.buildMultiplier 1)
+        (Currency.Currency 5)
 
 
 doubleCostResource : Resource.Resource
 doubleCostResource =
-    Resource.build "Double cost resource" 1 2 (Currency.Currency 5)
+    Resource.build
+        "Double cost resource"
+        (IncomeRate.build 1)
+        (Increasable.buildMultiplier 2)
+        (Currency.Currency 5)
 
 
 suite : Test

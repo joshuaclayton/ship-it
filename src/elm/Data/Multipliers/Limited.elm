@@ -7,8 +7,8 @@ module Data.Multipliers.Limited
         )
 
 import Data.Expirable as Expirable
+import Data.GameConfiguration as Config
 import Data.Increasable as Increasable
-import Data.Resource as Resource
 
 
 type alias Model =
@@ -22,9 +22,9 @@ initial =
 
 type MultiplierType
     = IncreaseGlobalProduction
-    | IncreaseLevelProduction Resource.Level
+    | IncreaseLevelProduction Config.Level
     | DecreaseGlobalCost
-    | DecreaseLevelCost Resource.Level
+    | DecreaseLevelCost Config.Level
 
 
 clickMultipliers : Model -> Increasable.Multiplier
@@ -33,7 +33,7 @@ clickMultipliers model =
         |> Increasable.combineMultipliers
 
 
-resourceLevelMultipliers : Model -> Resource.Level -> Increasable.Multiplier
+resourceLevelMultipliers : Model -> Config.Level -> Increasable.Multiplier
 resourceLevelMultipliers model level =
     List.map (toResourceLevelMultiplier level << Expirable.value) model
         |> Increasable.combineMultipliers
@@ -43,29 +43,29 @@ toClickMultiplier : MultiplierType -> Increasable.Multiplier
 toClickMultiplier multiplierType =
     case multiplierType of
         IncreaseGlobalProduction ->
-            Increasable.buildMultiplier 7
+            Config.limitedIncreasableMultiplier
 
         _ ->
-            Increasable.buildMultiplier 1
+            Increasable.noOp
 
 
-toResourceLevelMultiplier : Resource.Level -> MultiplierType -> Increasable.Multiplier
+toResourceLevelMultiplier : Config.Level -> MultiplierType -> Increasable.Multiplier
 toResourceLevelMultiplier level multiplierType =
     case multiplierType of
         IncreaseGlobalProduction ->
-            Increasable.buildMultiplier 7
+            Config.limitedIncreasableMultiplier
 
         IncreaseLevelProduction l ->
             if l == level then
-                Increasable.buildMultiplier 7
+                Config.limitedIncreasableMultiplier
             else
                 Increasable.noOp
 
         DecreaseGlobalCost ->
-            Increasable.buildMultiplier 0.9
+            Config.limitedDecreasableMultiplier
 
         DecreaseLevelCost l ->
             if l == level then
-                Increasable.buildMultiplier 0.77
+                Config.limitedDecreasableMultiplier
             else
                 Increasable.noOp

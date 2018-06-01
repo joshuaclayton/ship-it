@@ -6,6 +6,7 @@ module Data.Multipliers.Click
         )
 
 import Data.Currency as Currency
+import Data.GameConfiguration as Config
 import Data.Increasable as Increasable exposing (Increasable)
 
 
@@ -15,12 +16,17 @@ type alias Model =
 
 amount : Model -> Currency.Currency
 amount clickMultiplier =
-    Currency.Currency <| 1 * 2 ^ (toFloat <| Increasable.totalPurchasedCount clickMultiplier)
+    Currency.Currency <| config.increaseRate ^ (toFloat <| Increasable.totalPurchasedCount clickMultiplier)
 
 
 initial : Model
 initial =
-    { basePrice = Currency.Currency 50
-    , multiplier = Increasable.buildMultiplier 3
+    { basePrice = config.baseCost
+    , multiplier = config.increasableMultiplier
     , totalPurchased = Increasable.initialTotalCount
     }
+
+
+config : Config.ClickMultiplier
+config =
+    Config.clickMultiplierConfig
