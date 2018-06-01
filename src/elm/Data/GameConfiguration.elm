@@ -7,16 +7,19 @@ module Data.GameConfiguration
         , RandomEvent
         , ResourceMultiplier
         , allLevels
+        , bimapLevelDict
         , buildLevelDict
         , clickMultiplierConfig
         , filterLevelDict
         , increasableMultiplier
         , levelBaseCost
         , levelDictKeys
+        , levelFromString
         , levelIcon
         , levelIncomeRate
         , levelName
         , levelResourceMultiplierCost
+        , levelToString
         , limitedDecreasableMultiplier
         , limitedEventDuration
         , limitedIncreasableMultiplier
@@ -47,6 +50,13 @@ type Level
 
 type alias LevelDict a =
     AllDict.AllDict Level a String
+
+
+bimapLevelDict : (Level -> b) -> (a -> c) -> LevelDict a -> List ( b, c )
+bimapLevelDict mapKey mapValue dict =
+    dict
+        |> AllDict.toList
+        |> List.map (\( k, v ) -> ( mapKey k, mapValue v ))
 
 
 filterLevelDict : (Level -> a -> Bool) -> LevelDict a -> LevelDict a
@@ -241,6 +251,42 @@ levelIcon level =
 
         L8 ->
             FA.clock
+
+
+levelFromString : String -> Result String Level
+levelFromString value =
+    case value of
+        "L1" ->
+            Ok L1
+
+        "L2" ->
+            Ok L2
+
+        "L3" ->
+            Ok L3
+
+        "L4" ->
+            Ok L4
+
+        "L5" ->
+            Ok L5
+
+        "L6" ->
+            Ok L6
+
+        "L7" ->
+            Ok L7
+
+        "L8" ->
+            Ok L8
+
+        _ ->
+            Err "Unable to decode level"
+
+
+levelToString : Level -> String
+levelToString =
+    toString
 
 
 clickMultiplierConfig : ClickMultiplier

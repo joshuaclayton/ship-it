@@ -13,6 +13,8 @@ import Data.Expirable as Expirable exposing (Expirable, SecondsRemaining(..), ex
 import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
 import Data.Inventory as Inventory
+import LocalStorage exposing (LocalStorage)
+import LocalStorage.SharedTypes exposing (Ports, Value)
 
 
 type alias Model =
@@ -20,6 +22,7 @@ type alias Model =
     , inventory : Inventory.Inventory
     , events : List (Expirable Event)
     , recentlyGeneratedCurrency : List (Expirable Currency.Currency)
+    , storage : LocalStorage Msg
     }
 
 
@@ -37,10 +40,13 @@ type Msg
     | TickEvents
     | TickRecentlyGeneratedCurrency
     | AddEvent Event
+    | SetItem
+    | GetItem
+    | UpdatePort Value
 
 
-initial : Model
-initial =
+initial : Ports Msg -> Model
+initial ports =
     { toastMessages =
         [ expiresIn (SecondsRemaining 5) "Hi there"
         , expiresIn (SecondsRemaining 30) "This goes longer"
@@ -48,6 +54,7 @@ initial =
     , inventory = Inventory.initial
     , events = []
     , recentlyGeneratedCurrency = []
+    , storage = LocalStorage.make ports ""
     }
 
 

@@ -9,7 +9,9 @@
     "exposed-modules": [],
     "dependencies": {
         "HolyMeekrob/elm-font-awesome-5": "2.1.1 <= v < 3.0.0",
+        "billstclair/elm-localstorage": "4.0.2 <= v < 5.0.0",
         "eeue56/elm-all-dict": "2.0.1 <= v < 3.0.0",
+        "elm-community/json-extra": "2.7.0 <= v < 3.0.0",
         "elm-community/random-extra": "2.0.0 <= v < 3.0.0",
         "elm-lang/core": "5.0.0 <= v < 6.0.0",
         "elm-lang/html": "2.0.0 <= v < 3.0.0",

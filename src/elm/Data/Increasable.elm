@@ -16,6 +16,7 @@ module Data.Increasable
         , multiplierValue
         , noOp
         , purchase
+        , setTotalPurchased
         , totalPurchasedCount
         )
 
@@ -81,6 +82,11 @@ combineMultipliers multipliers =
 initialTotalCount : Total Purchased
 initialTotalCount =
     Total <| Purchased <| Count 0
+
+
+setTotalPurchased : Count -> Increasable a -> Increasable a
+setTotalPurchased count increasable =
+    { increasable | totalPurchased = Total <| Purchased count }
 
 
 increaseTotalPurchased : Count -> Increasable a -> Increasable a

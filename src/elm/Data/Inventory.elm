@@ -4,10 +4,14 @@ module Data.Inventory
         , accrueValue
         , addLimitedMultiplier
         , availableFunds
+        , buildFromInitial
         , canSpend
         , clickAmount
         , clickMultiplierCost
         , currentIncomeRate
+        , extractCurrency
+        , extractMultipliers
+        , extractResources
         , generateCurrency
         , initial
         , initialWithResources
@@ -20,6 +24,9 @@ module Data.Inventory
         , resources
         , resourcesWithLevels
         , setAvailableFunds
+        , setMultipliersFromCounts
+        , setResourcesFromList
+        , setWalletFromFloat
         , tickMultipliers
         )
 
@@ -45,6 +52,24 @@ type Inventory
         , discounts : LimitedMultipliers.Model
         , resources : Resources
         }
+
+
+initial : Inventory
+initial =
+    Inventory
+        { wallet = Wallet.initial
+        , multipliers = Multipliers.initial
+        , discounts = LimitedMultipliers.initial
+        , resources = initialResources
+        }
+
+
+buildFromInitial : Float -> List ( Config.Level, Int ) -> { click : Int, resources : List ( Config.Level, Int ) } -> Inventory
+buildFromInitial funds resourcesList multiplierCounts =
+    initial
+        |> setResourcesFromList resourcesList
+        |> setWalletFromFloat funds
+        |> setMultipliersFromCounts multiplierCounts
 
 
 randomEventConfig : Inventory -> Config.RandomEvent
@@ -82,14 +107,9 @@ setAvailableFunds newFunds (Inventory inventory) =
     Inventory { inventory | wallet = Wallet.fromCurrency newFunds }
 
 
-initial : Inventory
-initial =
-    Inventory
-        { wallet = Wallet.initial
-        , multipliers = Multipliers.initial
-        , discounts = LimitedMultipliers.initial
-        , resources = initialResources
-        }
+setWalletFromFloat : Float -> Inventory -> Inventory
+setWalletFromFloat newFunds (Inventory inventory) =
+    Inventory { inventory | wallet = Wallet.fromCurrency (Currency.Currency newFunds) }
 
 
 tickMultipliers : Inventory -> Inventory
@@ -263,3 +283,37 @@ purchasedLevels (Inventory { resources }) =
         )
         resources
         |> Config.levelDictKeys
+
+
+extractCurrency : Inventory -> Currency.Currency
+extractCurrency (Inventory { wallet }) =
+    Wallet.toCurrency wallet
+
+
+extractResources : Inventory -> Resources
+extractResources (Inventory { resources }) =
+    resources
+
+
+extractMultipliers : Inventory -> Multipliers.Model
+extractMultipliers (Inventory { multipliers }) =
+    multipliers
+
+
+setResourcesFromList : List ( Config.Level, Int ) -> Inventory -> Inventory
+setResourcesFromList resourcesList (Inventory ({ resources } as inventory)) =
+    let
+        newResources =
+            List.foldl
+                (\( level, count ) dict ->
+                    AllDict.update level (Maybe.map (Increasable.setTotalPurchased <| Increasable.Count count)) dict
+                )
+                resources
+                resourcesList
+    in
+    Inventory { inventory | resources = newResources }
+
+
+setMultipliersFromCounts : { click : Int, resources : List ( Config.Level, Int ) } -> Inventory -> Inventory
+setMultipliersFromCounts counts (Inventory inventory) =
+    Inventory { inventory | multipliers = Multipliers.buildFromCounts counts }

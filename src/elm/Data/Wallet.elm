@@ -2,6 +2,7 @@ module Data.Wallet
     exposing
         ( Wallet
         , add
+        , extractCurrency
         , fromCurrency
         , initial
         , subtract
@@ -43,3 +44,8 @@ subtract amount =
 map : (Currency.Currency -> Currency.Currency) -> Wallet -> Wallet
 map f (Wallet funds) =
     Wallet <| f funds
+
+
+extractCurrency : Wallet -> Currency.Currency
+extractCurrency (Wallet currency) =
+    currency

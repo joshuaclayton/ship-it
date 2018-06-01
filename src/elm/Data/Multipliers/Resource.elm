@@ -5,6 +5,7 @@ module Data.Multipliers.Resource
         , incrementTotalPurchased
         , initial
         , resourceLevelMultipliers
+        , setFromList
         )
 
 import AllDict
@@ -62,3 +63,17 @@ currentPrice model level =
 config : Config.ResourceMultiplier
 config =
     Config.resourceMultiplierConfig
+
+
+setFromList : List ( Config.Level, Int ) -> Model -> Model
+setFromList list initialModel =
+    List.foldl
+        (\( level, int ) dict ->
+            AllDict.update level
+                (Maybe.map
+                    (Increasable.setTotalPurchased <| Increasable.Count int)
+                )
+                dict
+        )
+        initialModel
+        list

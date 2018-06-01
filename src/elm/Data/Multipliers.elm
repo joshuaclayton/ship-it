@@ -2,8 +2,11 @@ module Data.Multipliers
     exposing
         ( Model
         , addLimitedMultiplier
+        , buildFromCounts
         , clickAmount
         , clickMultiplierCost
+        , extractClick
+        , extractResources
         , increaseMultiplierForLevel
         , incrementClickMultiplier
         , incrementResourceMultiplier
@@ -29,6 +32,14 @@ type Model
 initial : Model
 initial =
     Multipliers ClickMultiplier.initial ResourceMultiplier.initial LimitedMultiplier.initial
+
+
+buildFromCounts : { click : Int, resources : List ( Config.Level, Int ) } -> Model
+buildFromCounts { click, resources } =
+    Multipliers
+        (ClickMultiplier.setFromInt click ClickMultiplier.initial)
+        (ResourceMultiplier.setFromList resources ResourceMultiplier.initial)
+        LimitedMultiplier.initial
 
 
 mapClick : (ClickMultiplier.Model -> ClickMultiplier.Model) -> Model -> Model
@@ -99,3 +110,13 @@ clickMultiplierCost (Multipliers clickMultiplier _ _) =
 resourceMultiplierCost : Model -> Config.Level -> Currency.Currency
 resourceMultiplierCost (Multipliers _ resourcesMultipliers _) level =
     ResourceMultiplier.currentPrice resourcesMultipliers level
+
+
+extractClick : Model -> ClickMultiplier.Model
+extractClick (Multipliers clickMultiplier _ _) =
+    clickMultiplier
+
+
+extractResources : Model -> ResourceMultiplier.Model
+extractResources (Multipliers _ resourcesMultipliers _) =
+    resourcesMultipliers

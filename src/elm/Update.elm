@@ -9,14 +9,23 @@ import Data.Event as Event
 import Data.Expirable as Expirable
 import Data.GameConfiguration as Config
 import Data.Inventory as Inventory
+import LocalStorage exposing (getItem, setItem)
+import LocalStorage.SharedTypes exposing (Ports)
 import Model exposing (Model, Msg(..))
+import Persistence.InventoryDecoder exposing (decodeInventory)
+import Persistence.InventoryEncoder exposing (encodeInventory)
+import Persistence.Ports exposing (receiveItem)
 import Random
 import Time
 
 
-init : ( Model, Cmd Msg )
-init =
-    Model.initial ! []
+init : Ports Msg -> ( Model, Cmd Msg )
+init ports =
+    let
+        initialModel =
+            Model.initial ports
+    in
+    initialModel ! [ loadInventoryFromLocalStorage initialModel ]
 
 
 subscriptions : Model -> Sub Msg
@@ -32,6 +41,8 @@ subscriptions model =
         , Expirable.expirableSubscription (always TickRecentlyGeneratedCurrency)
         , Time.every Config.updateFrequencyInMs (always AccrueValue)
         , Time.every eventConfig.frequency (always RollForEvents)
+        , Time.every (Time.second * 5) (always SetItem)
+        , receiveItem UpdatePort
         ]
 
 
@@ -104,3 +115,22 @@ update msg model =
 
         TickRecentlyGeneratedCurrency ->
             { model | recentlyGeneratedCurrency = Expirable.tickAll model.recentlyGeneratedCurrency } ! []
+
+        GetItem ->
+            model ! [ loadInventoryFromLocalStorage model ]
+
+        SetItem ->
+            model ! [ saveInventoryToLocalStorage model ]
+
+        UpdatePort value ->
+            { model | inventory = decodeInventory value } ! []
+
+
+loadInventoryFromLocalStorage : Model -> Cmd Msg
+loadInventoryFromLocalStorage { storage } =
+    getItem storage "inventory"
+
+
+saveInventoryToLocalStorage : Model -> Cmd Msg
+saveInventoryToLocalStorage { storage, inventory } =
+    setItem storage "inventory" (encodeInventory inventory)

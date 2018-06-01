@@ -3,6 +3,7 @@ module Data.Multipliers.Click
         ( Model
         , amount
         , initial
+        , setFromInt
         )
 
 import Data.Currency as Currency
@@ -30,3 +31,8 @@ initial =
 config : Config.ClickMultiplier
 config =
     Config.clickMultiplierConfig
+
+
+setFromInt : Int -> Model -> Model
+setFromInt int initialClick =
+    Increasable.setTotalPurchased (Increasable.Count int) initialClick
