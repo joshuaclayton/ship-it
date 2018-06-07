@@ -257,5 +257,5 @@ resourceMultiplierConfig =
 randomEventConfig : RandomEvent
 randomEventConfig =
     { frequency = 15 * Time.second
-    , eventVisibilityDuration = 10 * Time.second
+    , eventVisibilityDuration = 10
     }
