@@ -20,15 +20,18 @@ init =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions =
-    always <|
-        Sub.batch
-            [ Expirable.expirableSubscription (always DecrementToastMessages)
-            , Expirable.expirableSubscription (always TickMultipliers)
-            , Expirable.expirableSubscription (always TickEvents)
-            , Time.every Config.updateFrequencyInMs (always AccrueValue)
-            , Time.every randomEventConfig.frequency (always RollForEvents)
-            ]
+subscriptions model =
+    let
+        eventConfig =
+            Inventory.randomEventConfig model.inventory
+    in
+    Sub.batch
+        [ Expirable.expirableSubscription (always DecrementToastMessages)
+        , Expirable.expirableSubscription (always TickMultipliers)
+        , Expirable.expirableSubscription (always TickEvents)
+        , Time.every Config.updateFrequencyInMs (always AccrueValue)
+        , Time.every eventConfig.frequency (always RollForEvents)
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -68,9 +71,13 @@ update msg model =
             model ! []
 
         NewEvent (Just event) ->
+            let
+                eventConfig =
+                    Inventory.randomEventConfig model.inventory
+            in
             { model
                 | events =
-                    Expirable.expiresIn (Expirable.SecondsRemaining randomEventConfig.eventVisibilityDuration) event :: model.events
+                    Expirable.expiresIn (Expirable.SecondsRemaining eventConfig.eventVisibilityDuration) event :: model.events
             }
                 ! []
 
@@ -83,8 +90,3 @@ update msg model =
 
         TickEvents ->
             { model | events = Expirable.tickAll model.events } ! []
-
-
-randomEventConfig : Config.RandomEvent
-randomEventConfig =
-    Config.randomEventConfig

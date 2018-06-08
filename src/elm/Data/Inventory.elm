@@ -15,6 +15,7 @@ module Data.Inventory
         , purchaseResource
         , purchaseResourceMultiplier
         , purchasedLevels
+        , randomEventConfig
         , resourceMultiplierCost
         , resources
         , resourcesWithLevels
@@ -44,6 +45,21 @@ type Inventory
         , discounts : LimitedMultipliers.Model
         , resources : Resources
         }
+
+
+randomEventConfig : Inventory -> Config.RandomEvent
+randomEventConfig (Inventory { multipliers }) =
+    let
+        multiplier =
+            Increasable.multiplierValue <| Multipliers.randomEventsMultiplier multipliers
+
+        randomConfig =
+            Config.randomEventConfig
+    in
+    { randomConfig
+        | frequency = randomConfig.frequency * multiplier
+        , eventVisibilityDuration = randomConfig.eventVisibilityDuration / multiplier
+    }
 
 
 clickAmount : Inventory -> Currency.Currency

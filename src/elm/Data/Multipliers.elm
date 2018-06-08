@@ -8,6 +8,7 @@ module Data.Multipliers
         , incrementClickMultiplier
         , incrementResourceMultiplier
         , initial
+        , randomEventsMultiplier
         , resourceMultiplierCost
         , tick
         )
@@ -71,6 +72,11 @@ increaseMultiplierForLevel (Multipliers _ resourcesMultipliers limitedMultiplier
 addLimitedMultiplier : LimitedMultiplier.MultiplierType -> Model -> Model
 addLimitedMultiplier multiplierType model =
     mapLimited (\xs -> LimitedMultiplier.build multiplierType :: xs) model
+
+
+randomEventsMultiplier : Model -> Increasable.Multiplier
+randomEventsMultiplier (Multipliers _ _ limitedMultipliers) =
+    LimitedMultiplier.randomEventsMultiplier limitedMultipliers
 
 
 clickAmount : Model -> Currency.Currency

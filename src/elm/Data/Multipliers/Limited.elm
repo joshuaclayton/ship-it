@@ -5,6 +5,7 @@ module Data.Multipliers.Limited
         , build
         , clickMultipliers
         , initial
+        , randomEventsMultiplier
         , resourceLevelMultipliers
         )
 
@@ -27,6 +28,7 @@ type MultiplierType
     | IncreaseLevelProduction Config.Level
     | DecreaseGlobalCost
     | DecreaseLevelCost Config.Level
+    | ImproveRandomEvents
 
 
 build : MultiplierType -> Expirable.Expirable MultiplierType
@@ -44,6 +46,17 @@ resourceLevelMultipliers : Model -> Config.Level -> Increasable.Multiplier
 resourceLevelMultipliers model level =
     List.map (toResourceLevelMultiplier level << Expirable.value) model
         |> Increasable.combineMultipliers
+
+
+randomEventsMultiplier : Model -> Increasable.Multiplier
+randomEventsMultiplier model =
+    let
+        exp =
+            List.filter ((==) ImproveRandomEvents << Expirable.value) model
+                |> List.length
+                |> toFloat
+    in
+    Increasable.buildMultiplier <| 2 ^ negate exp
 
 
 toClickMultiplier : MultiplierType -> Increasable.Multiplier
@@ -76,3 +89,6 @@ toResourceLevelMultiplier level multiplierType =
                 Config.limitedDecreasableMultiplier
             else
                 Increasable.noOp
+
+        ImproveRandomEvents ->
+            Increasable.noOp

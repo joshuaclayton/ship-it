@@ -16,6 +16,7 @@ import Random.Extra as Random
 type Event
     = GlobalRateIncrease Offset
     | LocalRateIncrease Offset Config.Level
+    | ImprovedRandomEvents Offset
 
 
 type Offset
@@ -31,10 +32,14 @@ toMultiplierType event =
         LocalRateIncrease _ level ->
             Multipliers.IncreaseLevelProduction level
 
+        ImprovedRandomEvents _ ->
+            Multipliers.ImproveRandomEvents
+
 
 all : Offset -> List Config.Level -> List Event
 all offset levels =
     GlobalRateIncrease offset
+        :: ImprovedRandomEvents offset
         :: List.map (LocalRateIncrease offset) levels
 
 

@@ -149,6 +149,15 @@ viewEvent expirable =
                 ]
                 [ levelToIcon level ]
 
+        ImprovedRandomEvents offset ->
+            a
+                [ class "event"
+                , offsetToStyle offset
+                , title "Improve random events"
+                , onClick <| AddEvent event
+                ]
+                [ randomEventIcon ]
+
 
 offsetToStyle : Offset -> Html.Attribute a
 offsetToStyle (Offset xpos ypos) =
@@ -173,3 +182,8 @@ resourceItem inventory level resource_ =
 suitcaseIcon : Html a
 suitcaseIcon =
     FA.iconWithOptions FA.suitcase FA.Solid [ FA.Size <| FA.Mult 2 ] [ class "multiplier-icon" ]
+
+
+randomEventIcon : Html a
+randomEventIcon =
+    FA.iconWithOptions FA.tachometerAlt FA.Solid [ FA.Size <| FA.Mult 2 ] [ class "multiplier-icon" ]
