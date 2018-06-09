@@ -62,7 +62,7 @@ update msg model =
             { model | inventory = Inventory.purchaseClickMultiplier model.inventory } ! []
 
         RollForEvents ->
-            model ! [ Random.generate NewEvent Event.optionalRandom ]
+            model ! [ Random.generate NewEvent (Event.optionalRandom <| Inventory.purchasedLevels model.inventory) ]
 
         NewEvent Nothing ->
             model ! []

@@ -14,6 +14,7 @@ module Data.Inventory
         , purchaseClickMultiplier
         , purchaseResource
         , purchaseResourceMultiplier
+        , purchasedLevels
         , resourceMultiplierCost
         , resources
         , resourcesWithLevels
@@ -236,3 +237,13 @@ initialResources =
                 (Config.increasableMultiplier level)
                 (Config.levelBaseCost level)
         )
+
+
+purchasedLevels : Inventory -> List Config.Level
+purchasedLevels (Inventory { resources }) =
+    Config.filterLevelDict
+        (\_ r ->
+            Increasable.totalPurchasedCount r > 0
+        )
+        resources
+        |> Config.levelDictKeys

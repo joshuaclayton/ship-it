@@ -9,8 +9,10 @@ module Data.GameConfiguration
         , allLevels
         , buildLevelDict
         , clickMultiplierConfig
+        , filterLevelDict
         , increasableMultiplier
         , levelBaseCost
+        , levelDictKeys
         , levelIcon
         , levelIncomeRate
         , levelName
@@ -44,6 +46,16 @@ type Level
 
 type alias LevelDict a =
     AllDict.AllDict Level a String
+
+
+filterLevelDict : (Level -> a -> Bool) -> LevelDict a -> LevelDict a
+filterLevelDict =
+    AllDict.filter
+
+
+levelDictKeys : LevelDict a -> List Level
+levelDictKeys =
+    AllDict.keys
 
 
 updateFrequencyInMs : Time.Time

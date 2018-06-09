@@ -32,10 +32,10 @@ toMultiplierType event =
             Multipliers.IncreaseLevelProduction level
 
 
-all : Offset -> List Event
-all offset =
+all : Offset -> List Config.Level -> List Event
+all offset levels =
     GlobalRateIncrease offset
-        :: List.map (LocalRateIncrease offset) Config.allLevels
+        :: List.map (LocalRateIncrease offset) levels
 
 
 totalOdds : Int
@@ -43,18 +43,18 @@ totalOdds =
     2
 
 
-optionalRandom : Generator (Maybe Event)
-optionalRandom =
-    random
+optionalRandom : List Config.Level -> Generator (Maybe Event)
+optionalRandom availableLevels =
+    random availableLevels
         |> Random.maybe (Random.oneIn totalOdds)
 
 
-random : Generator Event
-random =
+random : List Config.Level -> Generator Event
+random availableLevels =
     randomOffset
         |> Random.andThen
             (\offset ->
-                all offset
+                all offset availableLevels
                     |> Random.sample
                     |> Random.map (Maybe.withDefault <| GlobalRateIncrease offset)
             )
