@@ -12,6 +12,7 @@ module Data.Increasable
         , increaseTotalPurchased
         , incrementTotalPurchased
         , initialTotalCount
+        , mapMultiplier
         , multiplierValue
         , noOp
         , purchase
@@ -58,6 +59,11 @@ noOp =
 multiplierValue : Multiplier -> Float
 multiplierValue (Multiplier v) =
     v
+
+
+mapMultiplier : (Float -> Float) -> Multiplier -> Multiplier
+mapMultiplier f (Multiplier v) =
+    Multiplier <| f v
 
 
 combineMultipliers : List Multiplier -> Multiplier

@@ -232,7 +232,7 @@ levelIcon level =
 
 clickMultiplierConfig : ClickMultiplier
 clickMultiplierConfig =
-    { increaseRate = 2
+    { increaseRate = 2.4
     , baseCost = Currency.Currency 50
     , increasableMultiplier = Increasable.buildMultiplier 3
     }

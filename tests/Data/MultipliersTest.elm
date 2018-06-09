@@ -20,12 +20,12 @@ suite =
                 \_ ->
                     Expect.equal
                         (Multipliers.clickAmount <| Multipliers.incrementClickMultiplier Multipliers.initial)
-                        (Currency.Currency 2)
+                        (Currency.Currency 2.4)
             , test "returns the correct value when incremented multiple times" <|
                 \_ ->
                     Expect.equal
                         (Multipliers.clickAmount <| Multipliers.incrementClickMultiplier <| Multipliers.incrementClickMultiplier <| Multipliers.incrementClickMultiplier Multipliers.initial)
-                        (Currency.Currency 8)
+                        (Currency.Currency 13.824)
             ]
         , describe "clickMultiplierCost"
             [ test "defaults to 50" <|

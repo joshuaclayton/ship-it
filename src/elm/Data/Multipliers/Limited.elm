@@ -64,7 +64,7 @@ toResourceLevelMultiplier level multiplierType =
 
         IncreaseLevelProduction l ->
             if l == level then
-                Config.limitedIncreasableMultiplier
+                Increasable.mapMultiplier ((*) 2) Config.limitedIncreasableMultiplier
             else
                 Increasable.noOp
 
