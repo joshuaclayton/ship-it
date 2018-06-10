@@ -40,7 +40,7 @@ all offset levels =
 
 totalOdds : Int
 totalOdds =
-    2
+    4
 
 
 optionalRandom : List Config.Level -> Generator (Maybe Event)
