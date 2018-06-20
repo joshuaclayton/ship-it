@@ -29,6 +29,7 @@ subscriptions model =
         [ Expirable.expirableSubscription (always DecrementToastMessages)
         , Expirable.expirableSubscription (always TickMultipliers)
         , Expirable.expirableSubscription (always TickEvents)
+        , Expirable.expirableSubscription (always TickRecentlyGeneratedCurrency)
         , Time.every Config.updateFrequencyInMs (always AccrueValue)
         , Time.every eventConfig.frequency (always RollForEvents)
         ]
@@ -47,7 +48,17 @@ update msg model =
             { model | inventory = Inventory.tickMultipliers model.inventory } ! []
 
         GenerateCurrency ->
-            { model | inventory = Inventory.generateCurrency model.inventory } ! []
+            let
+                amount =
+                    Inventory.clickAmount model.inventory
+
+                newModel =
+                    { model
+                        | inventory = Inventory.generateCurrency model.inventory
+                    }
+                        |> Model.trackRecentlyGeneratedCurrency amount
+            in
+            newModel ! []
 
         AccrueValue ->
             { model
@@ -90,3 +101,6 @@ update msg model =
 
         TickEvents ->
             { model | events = Expirable.tickAll model.events } ! []
+
+        TickRecentlyGeneratedCurrency ->
+            { model | recentlyGeneratedCurrency = Expirable.tickAll model.recentlyGeneratedCurrency } ! []

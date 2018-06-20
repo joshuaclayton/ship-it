@@ -21,6 +21,7 @@ module Data.GameConfiguration
         , limitedEventDuration
         , limitedIncreasableMultiplier
         , randomEventConfig
+        , recentlyGeneratedCurrencyWindowInSeconds
         , resourceMultiplierConfig
         , updateFrequencyInMs
         )
@@ -277,3 +278,8 @@ randomEventConfig =
     { frequency = 15 * Time.second
     , eventVisibilityDuration = 10
     }
+
+
+recentlyGeneratedCurrencyWindowInSeconds : Float
+recentlyGeneratedCurrencyWindowInSeconds =
+    10

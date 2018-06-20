@@ -29,7 +29,7 @@ view model =
                 [ purchaseMultiplierButtons model.inventory
                 ]
             , div [ class "resources-list" ]
-                [ resourcesList model.inventory
+                [ resourcesList model
                 ]
             ]
         ]
@@ -92,23 +92,26 @@ levelToIcon level =
     FA.iconWithOptions icon FA.Solid [ FA.Size <| FA.Mult 2 ] [ class "multiplier-icon" ]
 
 
-resourcesList : Inventory.Inventory -> Html Msg
-resourcesList inventory =
+resourcesList : Model -> Html Msg
+resourcesList ({ inventory } as model) =
     div [ class "tape" ]
-        [ currentIncome inventory
+        [ currentIncome model
         , resources inventory
         ]
 
 
-currentIncome : Inventory.Inventory -> Html a
-currentIncome inventory =
+currentIncome : Model -> Html a
+currentIncome ({ inventory } as model) =
+    let
+        currentTotalIncomeRate =
+            IncomeRate.toCurrency <| Model.currentIncomeRate model
+    in
     div []
         [ h2 [] [ text "Current Funds" ]
-        , p
-            [ title <| Currency.format (IncomeRate.toCurrency <| Inventory.currentIncomeRate inventory) ++ " per second"
-            , class "current-funds"
-            ]
+        , p [ class "current-funds" ]
             [ text <| Currency.format <| Inventory.availableFunds inventory ]
+        , p [ class "income-rate" ]
+            [ text <| Currency.format currentTotalIncomeRate ++ "/s" ]
         ]
 
 
