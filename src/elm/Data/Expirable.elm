@@ -4,6 +4,7 @@ module Data.Expirable
         , SecondsRemaining(SecondsRemaining)
         , expirableSubscription
         , expiresIn
+        , percentComplete
         , tickAll
         , value
         )
@@ -15,13 +16,17 @@ type SecondsRemaining
     = SecondsRemaining Time.Time
 
 
+type SecondsTotal
+    = SecondsTotal Time.Time
+
+
 type Expirable a
-    = Expirable a SecondsRemaining
+    = Expirable a SecondsRemaining SecondsTotal
 
 
 expiresIn : SecondsRemaining -> a -> Expirable a
-expiresIn =
-    flip Expirable
+expiresIn (SecondsRemaining total) value =
+    Expirable value (SecondsRemaining total) (SecondsTotal total)
 
 
 expirableSubscription : (Time.Time -> a) -> Sub a
@@ -45,13 +50,13 @@ tickAll =
 
 
 tick : Expirable a -> Maybe (Expirable a)
-tick (Expirable a seconds) =
+tick (Expirable a seconds secondsTotal) =
     let
         newSecondsRemaining =
             decrementSecondsRemaining seconds
     in
     if anySecondsRemaining newSecondsRemaining then
-        Just <| Expirable a newSecondsRemaining
+        Just <| Expirable a newSecondsRemaining secondsTotal
     else
         Nothing
 
@@ -62,5 +67,10 @@ catMaybes =
 
 
 value : Expirable a -> a
-value (Expirable a _) =
+value (Expirable a _ _) =
     a
+
+
+percentComplete : Expirable a -> Float
+percentComplete (Expirable _ (SecondsRemaining remaining) (SecondsTotal total)) =
+    remaining / total

@@ -9,12 +9,15 @@ import Data.Expirable as Expirable exposing (Expirable)
 import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
 import Data.Inventory as Inventory
+import Data.Multipliers.Limited as LimitedMultiplier
 import Data.Resource as Resource
 import FontAwesome as FA
 import Html exposing (Html, a, div, h2, h3, li, p, span, text, ul)
 import Html.Attributes exposing (class, classList, style, title)
 import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
+import Svg
+import Svg.Attributes as Svg
 
 
 view : Model -> Html Msg
@@ -95,7 +98,8 @@ levelToIcon level =
 resourcesList : Model -> Html Msg
 resourcesList ({ inventory } as model) =
     div [ class "tape" ]
-        [ currentIncome model
+        [ currentLimitedMultipliers inventory
+        , currentIncome model
         , resources inventory
         ]
 
@@ -119,7 +123,7 @@ resources : Inventory.Inventory -> Html Msg
 resources inventory =
     div []
         [ h2 [] [ text "Resources" ]
-        , ul []
+        , ul [ class "purchasable-resources" ]
             (List.map
                 (\( level, resource ) -> resourceItem inventory level resource)
                 (Inventory.resourcesWithLevels inventory)
@@ -190,3 +194,48 @@ suitcaseIcon =
 randomEventIcon : Html a
 randomEventIcon =
     FA.iconWithOptions FA.tachometerAlt FA.Solid [ FA.Size <| FA.Mult 2 ] [ class "multiplier-icon" ]
+
+
+currentLimitedMultipliers : Inventory.Inventory -> Html a
+currentLimitedMultipliers inventory =
+    ul [ class "active-limited-multipliers" ]
+        (List.map (\multiplier -> li [] [ limitedMultipler multiplier ])
+            (Inventory.currentLimitedMultipliers inventory)
+        )
+
+
+limitedMultipler : Expirable.Expirable LimitedMultiplier.MultiplierType -> Html a
+limitedMultipler expirableMultiplier =
+    let
+        icon =
+            case Expirable.value expirableMultiplier of
+                LimitedMultiplier.IncreaseGlobalProduction ->
+                    suitcaseIcon
+
+                LimitedMultiplier.IncreaseLevelProduction level ->
+                    levelToIcon level
+
+                LimitedMultiplier.DecreaseGlobalCost ->
+                    suitcaseIcon
+
+                LimitedMultiplier.DecreaseLevelCost level ->
+                    levelToIcon level
+
+                LimitedMultiplier.ImproveRandomEvents ->
+                    randomEventIcon
+
+        remainingPercentage =
+            round <| Expirable.percentComplete expirableMultiplier * 100
+
+        dasharray =
+            toString remainingPercentage
+                ++ " "
+                ++ (toString <| 100 - remainingPercentage)
+    in
+    span [ class "icon-with-remaining-time" ]
+        [ icon
+        , Svg.svg [ Svg.class "countdown", Svg.viewBox "0 0 42 42" ]
+            [ Svg.circle [ Svg.class "used", Svg.cx "21", Svg.cy "21", Svg.r "15" ] []
+            , Svg.circle [ Svg.class "remaining", Svg.cx "21", Svg.cy "21", Svg.r "15", Svg.strokeDasharray dasharray ] []
+            ]
+        ]

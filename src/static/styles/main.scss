@@ -5,6 +5,7 @@ $stencil: 'Stardos Stencil', cursive;
 $receipt: 'Inconsolata', monospace;
 $brown: #bb8355;
 $dark-brown: darken($brown, 35%);
+$dark-red: darken(red, 20%);
 
 body {
   background: $brown url(cardboard.jpg) repeat;
@@ -64,7 +65,6 @@ body {
 }
 
 .primary-button {
-  $dark-red: darken(red, 20%);
   font-family: $stencil;
   font-weight: bold;
   color: $dark-red;
@@ -180,7 +180,7 @@ body {
     opacity: 0.6;
   }
 
-  ul {
+  ul.purchasable-resources {
     margin: 0;
     padding: 0 0 1em;
     list-style-type: none;
@@ -239,6 +239,56 @@ body {
         font-size: 3em;
         margin: 0;
       }
+    }
+  }
+}
+
+.active-limited-multipliers {
+  text-align: center;
+  padding: 0;
+  li {
+    display: inline-block;
+  }
+}
+
+.icon-with-remaining-time {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+
+  .multiplier-icon {
+    position: absolute;
+    top: 35px;
+    left: 36px;
+
+    &.fa-bicycle {
+      left: 33px;
+    }
+    &.fa-tachometer-alt {
+      left: 34px;
+      top: 33px;
+    }
+  }
+
+  svg.countdown {
+    transform: rotate(-90deg);
+    height: 100px;
+    width: 100px;
+    circle {
+      transition: stroke-dasharray 1s linear;
+      opacity: 0.5;
+      stroke-width: 8;
+      fill: transparent;
+    }
+
+    circle.used {
+      stroke: #d2d3d4;
+    }
+
+    circle.remaining {
+      stroke: $dark-red;
+      stroke-dashoffset: 0;
     }
   }
 }

@@ -11,6 +11,7 @@ module Data.Multipliers
         , incrementClickMultiplier
         , incrementResourceMultiplier
         , initial
+        , limited
         , randomEventsMultiplier
         , resourceMultiplierCost
         , tick
@@ -120,3 +121,8 @@ extractClick (Multipliers clickMultiplier _ _) =
 extractResources : Model -> ResourceMultiplier.Model
 extractResources (Multipliers _ resourcesMultipliers _) =
     resourcesMultipliers
+
+
+limited : Model -> LimitedMultiplier.Model
+limited (Multipliers _ _ limitedMultipliers) =
+    limitedMultipliers

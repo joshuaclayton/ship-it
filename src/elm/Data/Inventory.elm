@@ -9,6 +9,7 @@ module Data.Inventory
         , clickAmount
         , clickMultiplierCost
         , currentIncomeRate
+        , currentLimitedMultipliers
         , extractCurrency
         , extractMultipliers
         , extractResources
@@ -32,6 +33,7 @@ module Data.Inventory
 
 import AllDict
 import Data.Currency as Currency
+import Data.Expirable as Expirable
 import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
 import Data.Increasable as Increasable
@@ -70,6 +72,11 @@ buildFromInitial funds resourcesList multiplierCounts =
         |> setResourcesFromList resourcesList
         |> setWalletFromFloat funds
         |> setMultipliersFromCounts multiplierCounts
+
+
+currentLimitedMultipliers : Inventory -> List (Expirable.Expirable LimitedMultipliers.MultiplierType)
+currentLimitedMultipliers (Inventory { multipliers }) =
+    Multipliers.limited multipliers
 
 
 randomEventConfig : Inventory -> Config.RandomEvent
