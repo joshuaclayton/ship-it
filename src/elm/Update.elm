@@ -35,10 +35,10 @@ subscriptions model =
             Inventory.randomEventConfig model.inventory
     in
     Sub.batch
-        [ Expirable.expirableSubscription (always DecrementToastMessages)
-        , Expirable.expirableSubscription (always TickMultipliers)
-        , Expirable.expirableSubscription (always TickEvents)
-        , Expirable.expirableSubscription (always TickRecentlyGeneratedCurrency)
+        [ Expirable.expirableSubscription DecrementToastMessages
+        , Expirable.expirableSubscription TickMultipliers
+        , Expirable.expirableSubscription TickEvents
+        , Expirable.expirableSubscription TickRecentlyGeneratedCurrency
         , Time.every Config.updateFrequencyInMs AccrueValue
         , Time.every eventConfig.frequency (always RollForEvents)
         , Time.every (Time.second * 5) (always SetItem)
@@ -52,11 +52,11 @@ update msg model =
         NoOp ->
             model ! []
 
-        DecrementToastMessages ->
-            { model | toastMessages = Expirable.tickAll model.toastMessages } ! []
+        DecrementToastMessages time ->
+            { model | toastMessages = Expirable.tickAll time model.toastMessages } ! []
 
-        TickMultipliers ->
-            { model | inventory = Inventory.tickMultipliers model.inventory } ! []
+        TickMultipliers time ->
+            { model | inventory = Inventory.tickMultipliers time model.inventory } ! []
 
         GenerateCurrency ->
             let
@@ -130,11 +130,11 @@ update msg model =
             }
                 ! []
 
-        TickEvents ->
-            { model | events = Expirable.tickAll model.events } ! []
+        TickEvents time ->
+            { model | events = Expirable.tickAll time model.events } ! []
 
-        TickRecentlyGeneratedCurrency ->
-            { model | recentlyGeneratedCurrency = Expirable.tickAll model.recentlyGeneratedCurrency } ! []
+        TickRecentlyGeneratedCurrency time ->
+            { model | recentlyGeneratedCurrency = Expirable.tickAll time model.recentlyGeneratedCurrency } ! []
 
         GetItem ->
             model ! [ loadInventoryFromLocalStorage model ]

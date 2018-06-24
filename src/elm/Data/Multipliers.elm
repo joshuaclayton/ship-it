@@ -24,6 +24,7 @@ import Data.Increasable as Increasable
 import Data.Multipliers.Click as ClickMultiplier
 import Data.Multipliers.Limited as LimitedMultiplier
 import Data.Multipliers.Resource as ResourceMultiplier
+import Time
 
 
 type Model
@@ -58,9 +59,9 @@ mapResources f (Multipliers clickMultiplier resourcesMultipliers limitedMultipli
     Multipliers clickMultiplier (f resourcesMultipliers) limitedMultipliers
 
 
-tick : Model -> Model
-tick =
-    mapLimited Expirable.tickAll
+tick : Time.Time -> Model -> Model
+tick time =
+    mapLimited (Expirable.tickAll time)
 
 
 incrementClickMultiplier : Model -> Model

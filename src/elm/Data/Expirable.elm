@@ -20,13 +20,17 @@ type SecondsTotal
     = SecondsTotal Time.Time
 
 
+type alias LastTicked =
+    Maybe Time.Time
+
+
 type Expirable a
-    = Expirable a SecondsRemaining SecondsTotal
+    = Expirable a SecondsRemaining SecondsTotal LastTicked
 
 
 expiresIn : SecondsRemaining -> a -> Expirable a
 expiresIn (SecondsRemaining total) value =
-    Expirable value (SecondsRemaining total) (SecondsTotal total)
+    Expirable value (SecondsRemaining total) (SecondsTotal total) Nothing
 
 
 expirableSubscription : (Time.Time -> a) -> Sub a
@@ -39,24 +43,33 @@ anySecondsRemaining (SecondsRemaining i) =
     i > 0
 
 
-decrementSecondsRemaining : SecondsRemaining -> SecondsRemaining
-decrementSecondsRemaining (SecondsRemaining i) =
-    SecondsRemaining <| i - 1
+tickAll : Time.Time -> List (Expirable a) -> List (Expirable a)
+tickAll time =
+    catMaybes << List.map (tick time)
 
 
-tickAll : List (Expirable a) -> List (Expirable a)
-tickAll =
-    catMaybes << List.map tick
+decreaseSecondsRemaining : Float -> SecondsRemaining -> SecondsRemaining
+decreaseSecondsRemaining i (SecondsRemaining remaining) =
+    SecondsRemaining <| remaining - i
 
 
-tick : Expirable a -> Maybe (Expirable a)
-tick (Expirable a seconds secondsTotal) =
+tick : Time.Time -> Expirable a -> Maybe (Expirable a)
+tick time (Expirable a seconds secondsTotal lastTicked) =
     let
         newSecondsRemaining =
-            decrementSecondsRemaining seconds
+            decreaseSecondsRemaining secondToDecrease seconds
+
+        secondToDecrease =
+            toFloat <|
+                case lastTicked of
+                    Nothing ->
+                        1
+
+                    Just oldTime ->
+                        round <| (time - oldTime) / 1000
     in
     if anySecondsRemaining newSecondsRemaining then
-        Just <| Expirable a newSecondsRemaining secondsTotal
+        Just <| Expirable a newSecondsRemaining secondsTotal (Just time)
     else
         Nothing
 
@@ -67,10 +80,10 @@ catMaybes =
 
 
 value : Expirable a -> a
-value (Expirable a _ _) =
+value (Expirable a _ _ _) =
     a
 
 
 percentComplete : Expirable a -> Float
-percentComplete (Expirable _ (SecondsRemaining remaining) (SecondsTotal total)) =
+percentComplete (Expirable _ (SecondsRemaining remaining) (SecondsTotal total) _) =
     remaining / total

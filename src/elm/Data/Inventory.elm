@@ -41,6 +41,7 @@ import Data.Multipliers as Multipliers
 import Data.Multipliers.Limited as LimitedMultipliers
 import Data.Resource as Resource
 import Data.Wallet as Wallet exposing (Wallet)
+import Time
 
 
 type alias Resources =
@@ -119,9 +120,9 @@ setWalletFromFloat newFunds (Inventory inventory) =
     Inventory { inventory | wallet = Wallet.fromCurrency (Currency.Currency newFunds) }
 
 
-tickMultipliers : Inventory -> Inventory
-tickMultipliers (Inventory ({ multipliers } as inventory)) =
-    Inventory { inventory | multipliers = Multipliers.tick multipliers }
+tickMultipliers : Time.Time -> Inventory -> Inventory
+tickMultipliers time (Inventory ({ multipliers } as inventory)) =
+    Inventory { inventory | multipliers = Multipliers.tick time multipliers }
 
 
 initialWithResources : List ( Config.Level, Resource.Resource ) -> Inventory

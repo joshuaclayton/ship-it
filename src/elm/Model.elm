@@ -30,8 +30,8 @@ type alias Model =
 
 type Msg
     = NoOp
-    | DecrementToastMessages
-    | TickMultipliers
+    | DecrementToastMessages Time.Time
+    | TickMultipliers Time.Time
     | PurchaseResource Config.Level
     | PurchaseResourceMultiplier Config.Level
     | PurchaseClickMultiplier
@@ -39,8 +39,8 @@ type Msg
     | GenerateCurrency
     | RollForEvents
     | NewEvent (Maybe Event)
-    | TickEvents
-    | TickRecentlyGeneratedCurrency
+    | TickEvents Time.Time
+    | TickRecentlyGeneratedCurrency Time.Time
     | AddEvent Event
     | SetItem
     | GetItem
