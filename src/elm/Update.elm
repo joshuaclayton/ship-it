@@ -39,7 +39,7 @@ subscriptions model =
         , Expirable.expirableSubscription (always TickMultipliers)
         , Expirable.expirableSubscription (always TickEvents)
         , Expirable.expirableSubscription (always TickRecentlyGeneratedCurrency)
-        , Time.every Config.updateFrequencyInMs (always AccrueValue)
+        , Time.every Config.updateFrequencyInMs AccrueValue
         , Time.every eventConfig.frequency (always RollForEvents)
         , Time.every (Time.second * 5) (always SetItem)
         , receiveItem UpdatePort
@@ -71,9 +71,29 @@ update msg model =
             in
             newModel ! []
 
-        AccrueValue ->
+        AccrueValue time ->
+            let
+                multiplierNumerator =
+                    case model.lastAccruedTime of
+                        Just oldTime ->
+                            let
+                                timeDifferenceInMs =
+                                    time - oldTime
+
+                                outsideThresholdDifference =
+                                    timeDifferenceInMs * 1.1 > Config.updateFrequencyInMs
+                            in
+                            if outsideThresholdDifference then
+                                timeDifferenceInMs
+                            else
+                                Config.updateFrequencyInMs
+
+                        Nothing ->
+                            Config.updateFrequencyInMs
+            in
             { model
-                | inventory = Inventory.accrueValue (Config.updateFrequencyInMs / 1000) model.inventory
+                | inventory = Inventory.accrueValue (multiplierNumerator / 1000) model.inventory
+                , lastAccruedTime = Just time
             }
                 ! []
 

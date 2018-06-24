@@ -15,6 +15,7 @@ import Data.IncomeRate as IncomeRate
 import Data.Inventory as Inventory
 import LocalStorage exposing (LocalStorage)
 import LocalStorage.SharedTypes exposing (Ports, Value)
+import Time
 
 
 type alias Model =
@@ -23,6 +24,7 @@ type alias Model =
     , events : List (Expirable Event)
     , recentlyGeneratedCurrency : List (Expirable Currency.Currency)
     , storage : LocalStorage Msg
+    , lastAccruedTime : Maybe Time.Time
     }
 
 
@@ -33,7 +35,7 @@ type Msg
     | PurchaseResource Config.Level
     | PurchaseResourceMultiplier Config.Level
     | PurchaseClickMultiplier
-    | AccrueValue
+    | AccrueValue Time.Time
     | GenerateCurrency
     | RollForEvents
     | NewEvent (Maybe Event)
@@ -55,6 +57,7 @@ initial ports =
     , events = []
     , recentlyGeneratedCurrency = []
     , storage = LocalStorage.make ports ""
+    , lastAccruedTime = Nothing
     }
 
 
