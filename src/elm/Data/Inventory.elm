@@ -33,7 +33,6 @@ module Data.Inventory
 
 import AllDict
 import Data.Currency as Currency
-import Data.Expirable as Expirable
 import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
 import Data.Increasable as Increasable
@@ -41,6 +40,7 @@ import Data.Multipliers as Multipliers
 import Data.Multipliers.Limited as LimitedMultipliers
 import Data.Resource as Resource
 import Data.Wallet as Wallet exposing (Wallet)
+import Expirable
 import Time
 
 

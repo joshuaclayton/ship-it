@@ -6,9 +6,9 @@ module Update
         )
 
 import Data.Event as Event
-import Data.Expirable as Expirable
 import Data.GameConfiguration as Config
 import Data.Inventory as Inventory
+import Expirable
 import LocalStorage exposing (getItem, setItem)
 import LocalStorage.SharedTypes exposing (Ports)
 import Model exposing (Model, Msg(..))
@@ -35,10 +35,10 @@ subscriptions model =
             Inventory.randomEventConfig model.inventory
     in
     Sub.batch
-        [ Expirable.expirableSubscription DecrementToastMessages
-        , Expirable.expirableSubscription TickMultipliers
-        , Expirable.expirableSubscription TickEvents
-        , Expirable.expirableSubscription TickRecentlyGeneratedCurrency
+        [ Expirable.subscription DecrementToastMessages
+        , Expirable.subscription TickMultipliers
+        , Expirable.subscription TickEvents
+        , Expirable.subscription TickRecentlyGeneratedCurrency
         , Time.every Config.updateFrequencyInMs AccrueValue
         , Time.every eventConfig.frequency (always RollForEvents)
         , Time.every (Time.second * 5) (always SetItem)
@@ -53,7 +53,10 @@ update msg model =
             model ! []
 
         DecrementToastMessages time ->
-            { model | toastMessages = Expirable.tickAll time model.toastMessages } ! []
+            { model
+                | toastMessages = Expirable.tickAll time model.toastMessages
+            }
+                ! []
 
         TickMultipliers time ->
             { model | inventory = Inventory.tickMultipliers time model.inventory } ! []
@@ -119,7 +122,7 @@ update msg model =
             in
             { model
                 | events =
-                    Expirable.expiresIn (Expirable.SecondsRemaining eventConfig.eventVisibilityDuration) event :: model.events
+                    Expirable.build (Expirable.seconds eventConfig.eventVisibilityDuration) event :: model.events
             }
                 ! []
 

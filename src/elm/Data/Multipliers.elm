@@ -18,12 +18,12 @@ module Data.Multipliers
         )
 
 import Data.Currency as Currency
-import Data.Expirable as Expirable
 import Data.GameConfiguration as Config
 import Data.Increasable as Increasable
 import Data.Multipliers.Click as ClickMultiplier
 import Data.Multipliers.Limited as LimitedMultiplier
 import Data.Multipliers.Resource as ResourceMultiplier
+import Expirable
 import Time
 
 

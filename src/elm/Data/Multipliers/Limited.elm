@@ -9,9 +9,9 @@ module Data.Multipliers.Limited
         , resourceLevelMultipliers
         )
 
-import Data.Expirable as Expirable
 import Data.GameConfiguration as Config
 import Data.Increasable as Increasable
+import Expirable
 
 
 type alias Model =
@@ -33,7 +33,7 @@ type MultiplierType
 
 build : MultiplierType -> Expirable.Expirable MultiplierType
 build =
-    Expirable.expiresIn (Expirable.SecondsRemaining Config.limitedEventDuration)
+    Expirable.build (Expirable.seconds Config.limitedEventDuration)
 
 
 clickMultipliers : Model -> Increasable.Multiplier

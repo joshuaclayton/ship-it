@@ -5,12 +5,12 @@ module View
 
 import Data.Currency as Currency
 import Data.Event exposing (Event(..), Offset(..))
-import Data.Expirable as Expirable exposing (Expirable)
 import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
 import Data.Inventory as Inventory
 import Data.Multipliers.Limited as LimitedMultiplier
 import Data.Resource as Resource
+import Expirable exposing (Expirable)
 import FontAwesome as FA
 import Html exposing (Html, a, div, h2, h3, li, p, span, text, ul)
 import Html.Attributes exposing (class, classList, style, title)

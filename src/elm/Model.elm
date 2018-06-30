@@ -9,10 +9,10 @@ module Model
 
 import Data.Currency as Currency
 import Data.Event exposing (Event)
-import Data.Expirable as Expirable exposing (Expirable, SecondsRemaining(..), expiresIn)
 import Data.GameConfiguration as Config
 import Data.IncomeRate as IncomeRate
 import Data.Inventory as Inventory
+import Expirable exposing (Expirable)
 import LocalStorage exposing (LocalStorage)
 import LocalStorage.SharedTypes exposing (Ports, Value)
 import Time
@@ -50,8 +50,8 @@ type Msg
 initial : Ports Msg -> Model
 initial ports =
     { toastMessages =
-        [ expiresIn (SecondsRemaining 5) "Hi there"
-        , expiresIn (SecondsRemaining 30) "This goes longer"
+        [ Expirable.build (Expirable.seconds 5) "Hi there"
+        , Expirable.build (Expirable.seconds 30) "This goes longer"
         ]
     , inventory = Inventory.initial
     , events = []
@@ -72,7 +72,7 @@ trackRecentlyGeneratedCurrency : Currency.Currency -> Model -> Model
 trackRecentlyGeneratedCurrency amount model =
     let
         generatedCurrency =
-            Expirable.expiresIn (Expirable.SecondsRemaining Config.recentlyGeneratedCurrencyWindowInSeconds) amount
+            Expirable.build (Expirable.seconds Config.recentlyGeneratedCurrencyWindowInSeconds) amount
     in
     { model | recentlyGeneratedCurrency = generatedCurrency :: model.recentlyGeneratedCurrency }
 
