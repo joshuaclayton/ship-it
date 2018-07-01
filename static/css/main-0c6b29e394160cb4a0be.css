@@ -534,10 +534,15 @@ body {
     top: 35px;
     left: 36px; }
     .icon-with-remaining-time .multiplier-icon.fa-bicycle {
-      left: 33px; }
+      left: calc($left - 3px); }
+    .icon-with-remaining-time .multiplier-icon.fa-train {
+      left: calc($left + 2px);
+      top: calc($top + 1px); }
+    .icon-with-remaining-time .multiplier-icon.fa-ship {
+      left: calc($left - 4px); }
     .icon-with-remaining-time .multiplier-icon.fa-tachometer-alt {
-      left: 34px;
-      top: 33px; }
+      left: calc($left - 2px);
+      top: calc($top - 2px); }
   .icon-with-remaining-time svg.countdown {
     -webkit-transform: rotate(-90deg);
             transform: rotate(-90deg);

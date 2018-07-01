@@ -259,15 +259,25 @@ body {
 
   .multiplier-icon {
     position: absolute;
-    top: 35px;
-    left: 36px;
+    $top: 35px;
+    $left: 36px;
+    top: $top;
+    left: $left;
 
     &.fa-bicycle {
-      left: 33px;
+      left: calc($left - 3px);
+    }
+    &.fa-train {
+      left: calc($left + 2px);
+      top: calc($top + 1px);
+    }
+
+    &.fa-ship {
+      left: calc($left - 4px);
     }
     &.fa-tachometer-alt {
-      left: 34px;
-      top: 33px;
+      left: calc($left - 2px);
+      top: calc($top - 2px);
     }
   }
 
